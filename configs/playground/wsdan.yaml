@@ -1,0 +1,12 @@
+# WS-DAN (core.wsdan) on MobileNetV3-L: 32 attention maps on 7x7 last feature map at 224 px
+name: "MobileNetV3-L WS-DAN"
+timm_model: "mobilenetv3_large_100.ra_in1k"
+experiment: "cnn-playground-wsdan"
+folds: [0, 1]
+epochs: 5
+img_size: 224
+oversample: 8
+pos_weight_power: 1.0
+n_other: 60
+log_every_n_steps: 5
+wsdan: true

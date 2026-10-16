@@ -1,0 +1,11 @@
+# WS-DAN baseline: plain MobileNetV3-L, same setup as wsdan.toml
+name: "MobileNetV3-L"
+timm_model: "mobilenetv3_large_100.ra_in1k"
+experiment: "cnn-playground-wsdan"
+folds: [0, 1]
+epochs: 5
+img_size: 224
+oversample: 8
+pos_weight_power: 1.0
+n_other: 60
+log_every_n_steps: 5
