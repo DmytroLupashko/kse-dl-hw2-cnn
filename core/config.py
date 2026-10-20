@@ -11,6 +11,7 @@ CHECKPOINTS = ROOT / "checkpoints"
 MLFLOW_URI = f"sqlite:///{ROOT / 'mlflow.db'}"  # one tracking database for every notebook
 
 CLASSES = ["Cat", "Dog", "Moris", "Motya", "Biatrix"]
+VIP = ["Moris", "Motya", "Biatrix"]  # individual animals, rare classes
 N_FOLDS = 5
 SEED = 95431
 

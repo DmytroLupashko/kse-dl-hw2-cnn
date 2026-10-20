@@ -7,8 +7,6 @@
 ├── sections/       experiments, in workflow order
 │   ├── eda/
 │   ├── validation/
-│   ├── baseline/
-│   ├── augmentation/
 │   ├── model/
 │   └── ensemble/
 ├── docs/           task, rules, backlog

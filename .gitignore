@@ -27,3 +27,6 @@ docs/course/
 
 # Lightning checkpoints
 checkpoints/
+
+# Scratch notebooks
+playground/

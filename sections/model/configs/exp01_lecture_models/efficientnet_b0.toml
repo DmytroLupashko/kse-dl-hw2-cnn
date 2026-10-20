@@ -1,0 +1,8 @@
+name = "EfficientNet-B0"
+timm_model = "tf_efficientnet_b0.in1k"
+experiment = "cnn-model-lecture-models"
+folds = [0, 1]  # Fast validation mode
+epochs = 10
+img_size = 224
+batch_size = 64
+num_workers = 4

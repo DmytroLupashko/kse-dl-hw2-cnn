@@ -2,7 +2,7 @@
 
 Source: `docs/Assignment_2_Task.md`. Task context: `docs/overview.md`.
 
-- [ ] Set up workflow (Github + local structure)
+- [x] Set up workflow (Github + local structure)
 - [ ] Code is clean and readable
 - [ ] Write README.md
 
@@ -10,21 +10,20 @@ Source: `docs/Assignment_2_Task.md`. Task context: `docs/overview.md`.
 
 Section: `sections/eda/`.
 
-- [ ] EDA: class balance, label co-occurrence, labels per image, image sizes, sample grids
-- [ ] Macro F1 analysis: strengths, weaknesses, edge cases (rare class, empty predictions, threshold sensitivity)
-- [ ] Complementary metrics: per-class F1, micro F1, mAP, ROC AUC
-- [ ] Alternative target metric, justified
+- [x] EDA: class balance, label co-occurrence, labels per image, image sizes, sample grids
+- [x] Macro F1 analysis: strengths, weaknesses, edge cases (rare class, empty predictions, threshold sensitivity)
+- [x] Complementary metrics: per-class F1, micro F1, mAP, ROC AUC
+- [x] Alternative target metric, justified
 ## Data Augmentation
 
-Section: `sections/augmentation/`.
+Section: `sections/model/`.
 ## Validation
 
 Section: `sections/validation/`.
 
-- [ ] Validation scheme (multilabel stratified K-fold or holdout), correlated with Public LB
-- [ ] Motivation for chosen scheme
+- [x] Validation scheme (multilabel stratified K-fold or holdout) based on common sense
+- [x] Motivation for chosen scheme
 - [ ] Reasons for low or high LB correlation
-- [ ] Adversarial validation if needed, same model as main task
 
 ## CNN Model
 

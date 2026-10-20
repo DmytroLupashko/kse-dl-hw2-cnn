@@ -10,7 +10,7 @@
 
 ## Plan
 
-[few sentences]
+1. [step]
 
 ## Setup
 
@@ -19,6 +19,10 @@
 - **What changes:**
 - **What stays fixed:**
 - **Metric:**
+
+## Fixes
+
+[my fix requests after build, verbatim]
 
 ## Results
 

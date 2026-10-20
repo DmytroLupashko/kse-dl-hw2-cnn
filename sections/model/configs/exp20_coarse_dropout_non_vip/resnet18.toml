@@ -1,0 +1,12 @@
+name = "ResNet-18"
+timm_model = "resnet18.a1_in1k"
+experiment = "cnn-model-coarse-dropout-non-vip"
+folds = [0, 1]  # Fast validation mode
+epochs = 10
+img_size = 224
+augment = "coarse_dropout_non_vip"  # colored holes on non-VIP rows, core.data.coarse_dropout_non_vip_tfms
+oversample = 8  # VIP rows 8 times per epoch
+downsample = 0.2  # non-VIP rows: random 20% per epoch, pos_weight counted over draws
+pos_weight_power = 1.0  # full ratio (N - n_c) / n_c
+batch_size = 64
+num_workers = 4

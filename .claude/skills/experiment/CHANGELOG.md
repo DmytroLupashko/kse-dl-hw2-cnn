@@ -11,3 +11,7 @@ One line per change and the break it fixes (see "Experiment Skill: Approaches an
 - 2026-10-12: Project details (section names, tracking prefix, Jupyter path) moved from SKILL.md to CLAUDE.md.
 - 2026-10-16: Sections moved under `sections/<N>_<section>/`, name without number; folders created on first file.
 - 2026-10-16: Section folders lose number prefix: `sections/<section>/`, order listed in CLAUDE.md.
+- 2026-10-16: Plan as numbered steps, one per output, verb-first sentence, no "label: details".
+- 2026-10-16: Fixes section after Setup: my fix requests after build, verbatim.
+- 2026-10-17: Build step 5: smoke tracking experiment and smoke checkpoints deleted after verify; they piled up (6.8 GB) and were never read.
+- 2026-10-17: Build step 3: training through `core.cv` and one TOML config per model (from playground); notebook passes smoke `OVERRIDES`, holds no training loop.

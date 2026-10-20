@@ -1,0 +1,9 @@
+name = "ResNet-18"
+timm_model = "resnet18.a1_in1k"
+experiment = "cnn-model-oversampling-vip"
+folds = [0, 1]  # Fast validation mode
+epochs = 10
+img_size = 224
+oversample = 8  # VIP rows 8 times per epoch, VIP pos_weight / 8
+batch_size = 64
+num_workers = 4

@@ -1,0 +1,11 @@
+name = "ResNet-18"
+timm_model = "resnet18.a1_in1k"
+experiment = "cnn-model-attention-dropping"
+folds = [0, 1]  # Fast validation mode
+epochs = 10
+img_size = 224
+augment = "attention_drop"  # default recipe plus pseudo-box erase, core.data.attention_drop_tfms
+oversample = 8  # VIP rows 8 times per epoch, VIP pos_weight / 8
+pos_weight_power = 1.0  # full ratio (N - n_c) / n_c
+batch_size = 64
+num_workers = 4

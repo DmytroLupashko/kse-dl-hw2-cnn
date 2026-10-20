@@ -1,0 +1,8 @@
+name = "AlexNet"
+torchvision_model = "alexnet"
+experiment = "cnn-model-lecture-models"
+folds = [0, 1]  # Fast validation mode
+epochs = 10
+img_size = 224
+batch_size = 64
+num_workers = 4

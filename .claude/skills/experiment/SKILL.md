@@ -15,15 +15,17 @@ Mode from `$ARGUMENTS`: first word `build` or `report`, otherwise a new request.
 ## Request
 
   1. Next NN = highest in `<section>/experiments/` + 1 (01 in a new section). Copy template.md.
-  2. Request: the user's words, verbatim. Question: one measurable sentence (ask if you can't). Plan and Setup: proposed.
+  2. Request: the user's words, verbatim. Question: one measurable sentence (ask if you can't). Plan and Setup: proposed. Plan: numbered steps, one per output (table, figure, sheet); step that only gathers data merges into step using it; each step one sentence starting with verb, never "label: details".
   3. Stop. Wait for approval before building.
 
 ## Build [NN]
 
   1. Build the notebook for experiment NN of the section (default: last in the section).
   2. Notebook holds code only: title linking the card, section headers, one-line comments on choices that aren't obvious.
-  3. The config cell reads `SMOKE = os.environ.get("SMOKE") == "1"` and sets every constant that controls run size in one `if SMOKE: ... else: ...` block. Smoke mode shrinks each one (data size, iterations, folds, search grid, and so on) to the smallest value that still runs every code path, so the run takes seconds. Tracking experiment: `<prefix>-<section>-<slug>` (prefix from CLAUDE.md); smoke mode logs to the same name plus `-smoke` and saves no figures.
-  4. Verify with `SMOKE=1 <jupyter> nbconvert --execute --to notebook --stdout <nb> > /dev/null` (`<jupyter>` from CLAUDE.md). Fix until it passes. Never run at full scale and never write outputs to the notebook.
+  3. Training experiments: one TOML config per model (path and training entry point from CLAUDE.md); notebook holds no training loop. Smoke shrinks runs through `OVERRIDES` passed to `Config.from_toml`.
+  4. The config cell reads `SMOKE = os.environ.get("SMOKE") == "1"` and sets every constant that controls run size in one `if SMOKE: ... else: ...` block. Smoke mode shrinks each one (data size, iterations, folds, search grid, and so on) to the smallest value that still runs every code path, so the run takes seconds. Tracking experiment: `<prefix>-<section>-<slug>` (prefix from CLAUDE.md); smoke mode logs to the same name plus `-smoke` and saves no figures.
+  5. Verify with `SMOKE=1 <jupyter> nbconvert --execute --to notebook --stdout <nb> > /dev/null` (`<jupyter>` from CLAUDE.md). Fix until it passes. Never run at full scale and never write outputs to the notebook.
+  6. After it passes, delete smoke leftovers: smoke tracking experiment permanently (MLflow: `delete_experiment`, then `mlflow gc --tracking-uri <uri> --experiment-ids <id>`, otherwise the name stays taken and next smoke run fails) its checkpoint folder `checkpoints/<tracking experiment>-smoke/` and results folder `data/processed/cv/<tracking experiment>-smoke/`.
 
 
 ## Report [NN]
