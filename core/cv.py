@@ -19,22 +19,21 @@ warnings.filterwarnings("ignore", message="IProgress not found")  # no ipywidget
 warnings.filterwarnings("ignore", message=".*does not have many workers")  # num_workers = 0 on purpose
 warnings.filterwarnings("ignore", message=".*LeafSpec.*is deprecated")  # inside lightning
 
-import mlflow
+import numpy as np
 import pandas as pd
-import timm
 import torch
 from huggingface_hub.utils import logging as hf_logging
 
-from core.config import CHECKPOINTS, CLASSES, MLFLOW_URI, PROCESSED, SEED, VIP
-from core.data import TRAIN_TFMS, KaggleDataModule, read_train, sample_weights, val_tfms
-from core.model import TORCHVISION_MODELS, LitCNNMultiLabel, pos_weight
-from core.predict import ap_report, predict_probs
-from core.train import train
-from core.wsdan import WSDAN, LitWSDAN
+from core.augment import RECIPES, Validation
+from core.config import CLASSES, DEVICE, PROCESSED, SEED, VIP
+from core.data import KaggleDataModule, read_train
+from core.model import LitCNNMultiLabel
+from core.scores import Scores
+from core.tracking import TrackedRun
+from core.train import TrainingRun
 
 PROB_COLS = [f"p_{c}" for c in CLASSES]
 hf_logging.set_verbosity_error()  # HF_TOKEN notice when timm downloads weights
-DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -43,11 +42,10 @@ class Config:
     experiment: str  # `cnn-<section>-<slug>`
     timm_model: str | None = None  # exactly one of `timm_model`, `torchvision_model`
     torchvision_model: str | None = None  # key of `core.model.TORCHVISION_MODELS`, for models absent in timm
-    wsdan: bool = False  # WS-DAN on `timm_model` (`core.wsdan`): attention head, attention crop and drop
     folds: list[int] = dataclasses.field(default_factory=lambda: [0, 1])
     epochs: int = 3
     img_size: int = 64
-    augment: str = "default"  # key of `core.data.TRAIN_TFMS`
+    augment: str = "default"  # key of `core.augment.RECIPES`
     oversample: int = 1  # VIP rows drawn this many times per epoch, VIP `pos_weight` divided by it; 1: plain shuffling
     downsample: float = 1.0  # non-VIP rows drawn this fraction of times per epoch, `pos_weight` counted over draws
     pos_weight_power: float = 0.75  # `pos_weight` = ((N - n_c) / n_c) ** power; 1.0: full ratio
@@ -62,8 +60,6 @@ class Config:
     def __post_init__(self):
         if (self.timm_model is None) == (self.torchvision_model is None):
             raise ValueError(f"{self.name}: set exactly one of timm_model, torchvision_model")
-        if self.wsdan and self.timm_model is None:
-            raise ValueError(f"{self.name}: wsdan needs timm_model")
 
     @classmethod
     def from_toml(cls, path, **overrides):
@@ -96,46 +92,29 @@ class Config:
     def read_data(self):
         """Train table; `n_other` set: every VIP row plus `n_other` others per fold, so every class has positives in every fold."""
         df = read_train()
+        
         if self.n_other is None:
             return df
+          
         vip = df[VIP].any(axis=1)
         other = df[~vip].groupby("fold").sample(self.n_other, random_state=SEED)
+        
         return pd.concat([df[vip], other])  # index kept: OOF rows map back to `read_train()` rows
+
+    def run(self, fold):
+        """`TrainingRun` of `fold`: MLflow run and checkpoint folder `<name> fold <fold>`."""
+        return TrainingRun(self.experiment, f"{self.name} fold {fold}")
 
     def fold_model(self, fold):
         """Trained `LitCNNMultiLabel` of `fold` from its checkpoint, on `DEVICE`."""
-        ckpt = next((CHECKPOINTS / self.experiment / f"{self.name} fold {fold}").glob("*.ckpt"))
-        # pos_weight buffer restored from checkpoint; passed only for its shape
-        kwargs = self.lit_kwargs(torch.ones(len(CLASSES)))
-        return self.lit_class.load_from_checkpoint(ckpt, map_location=DEVICE, **kwargs)
+        ckpt = self.run(fold).best_checkpoint()
+        return LitCNNMultiLabel.load(ckpt, self.timm_model, self.torchvision_model, map_location=DEVICE)
 
     def predict_val(self, fold, tfms):
-        """(probs, labels) of validation rows of `fold` by its trained network, images through `tfms` instead of `val_tfms`."""
+        """(probs, labels) of validation rows of `fold` by its trained network, images through `tfms` instead of `Validation`."""
         dm = KaggleDataModule(self.read_data(), fold=fold, batch_size=self.batch_size, num_workers=self.num_workers, val_tfms=tfms)
         dm.setup()
-        return predict_probs(self.fold_model(fold), dm.val_dataloader())
-
-    @property
-    def lit_class(self):
-        return LitWSDAN if self.wsdan else LitCNNMultiLabel
-
-    def lit_kwargs(self, weights):
-        if self.wsdan:
-            model_class = WSDAN
-            model_kwargs = {"model_name": self.timm_model, "num_classes": len(CLASSES)}
-        elif self.timm_model is not None:
-            model_class = timm.create_model
-            model_kwargs = {"model_name": self.timm_model, "pretrained": True, "num_classes": len(CLASSES)}
-        else:
-            model_class = TORCHVISION_MODELS[self.torchvision_model]
-            model_kwargs = {"num_classes": len(CLASSES)}
-        return {
-            "model_class": model_class,
-            "model_kwargs": model_kwargs,
-            "initial_lr": self.initial_lr,
-            "final_lr": self.final_lr,
-            "pos_weight": weights,
-        }
+        return self.fold_model(fold).predict_probs(dm.val_dataloader())
 
 
 @dataclasses.dataclass
@@ -153,6 +132,15 @@ class CVResult:
     def probs(self):
         return self.oof[PROB_COLS].to_numpy()
 
+    @property
+    def scores(self):
+        """`Scores` of pooled OOF rows."""
+        return Scores(self.labels, self.probs)
+
+    def mean_curve(self, key):
+        """Per-epoch metric `key` of fold runs, averaged over folds."""
+        return np.mean([TrackedRun(run_id).curve(key) for run_id in self.run_ids.values()], axis=0)
+
     def save(self):
         out = self.config.results_dir
         out.mkdir(parents=True, exist_ok=True)
@@ -167,8 +155,9 @@ class CVResult:
         Stored config returned, so CLI overrides used at training kept."""
         out = config.results_dir
         meta = json.loads((out / "cv.json").read_text())
+        fields = {f.name for f in dataclasses.fields(Config)}  # fields removed since saving dropped, e.g. `wsdan`
         return cls(
-            Config(**meta["config"]),
+            Config(**{k: v for k, v in meta["config"].items() if k in fields}),
             pd.read_parquet(out / "oof.parquet"),
             pd.read_parquet(out / "fold_ap.parquet"),
             {int(fold): run_id for fold, run_id in meta["run_ids"].items()},
@@ -196,42 +185,31 @@ class CrossValidator:
         """Returns (validation rows with probs, AP report, MLflow run id) of `fold`."""
         cfg = self.config
         is_val = (self.df["fold"] == fold).to_numpy()
-        train_part = self.df.loc[~is_val]
-        if cfg.downsample == 1:
-            weights = pos_weight(train_part[CLASSES].to_numpy(), cfg.pos_weight_power)  # train part of fold only
-            weights[[CLASSES.index(c) for c in VIP]] /= cfg.oversample  # sampling x pos_weight kept as without oversampling
-        else:  # positives and negatives counted as sampler draws them
-            draws = sample_weights(train_part, cfg.oversample, cfg.downsample)
-            weights = pos_weight(train_part[CLASSES].to_numpy(), cfg.pos_weight_power, draws)
         dm = KaggleDataModule(
             self.df,
             fold=fold,
             batch_size=cfg.batch_size,
             num_workers=cfg.num_workers,
-            train_tfms=TRAIN_TFMS[cfg.augment](cfg.img_size),
-            val_tfms=val_tfms(cfg.img_size),
+            train_tfms=RECIPES[cfg.augment](cfg.img_size).compose(),
+            val_tfms=Validation(cfg.img_size).compose(),
             oversample=cfg.oversample,
             downsample=cfg.downsample,
         )
-        best_path, run_id = train(
-            cfg.lit_class(**cfg.lit_kwargs(weights)),
-            dm,
-            experiment=cfg.experiment,
-            run_name=f"{cfg.name} fold {fold}",
-            epochs=cfg.epochs,
-            reuse=not cfg.retrain,
-            log_every_n_steps=cfg.log_every_n_steps,
+        model = LitCNNMultiLabel.build(
+            cfg.timm_model, cfg.torchvision_model, cfg.initial_lr, cfg.final_lr, dm.pos_weight(cfg.pos_weight_power)
         )
-        best = cfg.lit_class.load_from_checkpoint(best_path, map_location=DEVICE, **cfg.lit_kwargs(weights))
+        run_id = cfg.run(fold).fit(
+            model, dm, cfg.epochs, reuse=not cfg.retrain, log_every_n_steps=cfg.log_every_n_steps
+        )
+        del model
+        best = cfg.fold_model(fold)
         dm.setup()  # setup runs inside fit only, skipped when run reused
-        probs, y = predict_probs(best, dm.val_dataloader())
+        probs, y = best.predict_probs(dm.val_dataloader())
         del best
         gc.collect()
         torch.mps.empty_cache() if torch.backends.mps.is_available() else torch.cuda.empty_cache()
-        ap = ap_report(y, probs)
-        client = mlflow.MlflowClient(MLFLOW_URI)
-        for c, v in ap.items():
-            client.log_metric(run_id, f"best_ap_{c}", v)
+        ap = Scores(y, probs).ap()
+        TrackedRun(run_id).log_metrics({f"best_ap_{c}": v for c, v in ap.items()})
         val = self.df.loc[is_val, ["fold", *CLASSES]].copy()
         val[PROB_COLS] = probs
         return val, ap, run_id

@@ -16,13 +16,13 @@ Figures: one training image per VIP class, 448 px, each augmentation at p = 1, f
 
 ## In this project
 
-`Config.augment` picks key of `core.data.TRAIN_TFMS`. Applied on the fly in `MultilabelImageDataset.__getitem__`. Validation, test: `val_tfms`, resize plus normalize.
+`Config.augment` picks key of `core.augment.RECIPES` (recipe class tree in `core/augment/recipes.py`). Applied on the fly in `MultilabelImageDataset.__getitem__` via `core.augment.RowTransform`. Validation, test: `Validation`, resize plus normalize.
 
-Default `train_tfms` (`augment = "default"`): `Resize`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate_percent=0.1, scale=(0.8, 1.2), rotate=(-15, 15), p=0.5)`.
+Default `Default` (`augment = "default"`): `Resize`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate_percent=0.1, scale=(0.8, 1.2), rotate=(-15, 15), p=0.5)`.
 
 ![Current recipe, 6 draws](figures/augmentations_recipe_current.png)
 
-Lecture `lecture_tfms` (`augment = "lecture"`, exp03): `Resize`, `HorizontalFlip(p=0.5)`, `VerticalFlip(p=0.5)`, `RandomBrightnessContrast(0.5, 0.5, p=0.5)`, `HueSaturationValue(20, 30, 20, p=0.5)`. Strong color: Motya pink or almost black, Biatrix yellow-green; half upside down.
+Lecture `Lecture` (`augment = "lecture"`, exp03): `Resize`, `HorizontalFlip(p=0.5)`, `VerticalFlip(p=0.5)`, `RandomBrightnessContrast(0.5, 0.5, p=0.5)`, `HueSaturationValue(20, 30, 20, p=0.5)`. Strong color: Motya pink or almost black, Biatrix yellow-green; half upside down.
 
 ![Lecture recipe, 6 draws](figures/augmentations_recipe_lecture.png)
 

@@ -4,6 +4,6 @@ experiment = "cnn-model-lecture-augmentations"
 folds = [0, 1]  # Fast validation mode
 epochs = 10
 img_size = 224
-augment = "lecture"  # `core.data.lecture_tfms`
+augment = "lecture"  # `core.augment.Lecture`
 batch_size = 64
 num_workers = 4

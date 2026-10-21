@@ -13,9 +13,9 @@ Sources:
 `core/boxes.py`, `python -m core.boxes`, result `data/processed/boxes.csv`.
 
 1. Model: exp04 ResNet-18; image in validation fold 0 or 1 boxed by fold model that never trained on it, others by fold 0 model.
-2. Input: `val_tfms`, 224 × 224.
+2. Input: `Validation`, 224 × 224.
 3. Classes: every present label; unlabeled image: top logit.
-4. Grad-CAM at `layer4` (`core.gradcam.grad_cam`).
+4. Grad-CAM at `layer4` (`core.gradcam.GradCam`).
 5. Box: bounding rectangle of pixels ≥ 0.5 of max, coordinates in [0, 1].
 6. All-zero map: no box (671 images), crop keeps whole image.
 

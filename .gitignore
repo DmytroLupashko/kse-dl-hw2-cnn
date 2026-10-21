@@ -21,6 +21,7 @@ mlflow.db
 
 # Local-only files
 link.txt
+docs/theory_answers.md
 
 # Course materials (local copy)
 docs/course/

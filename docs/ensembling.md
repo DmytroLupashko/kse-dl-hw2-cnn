@@ -14,7 +14,7 @@ Pitfall: weights or meta-model chosen and scored on same OOF rows: optimistic. C
 
 1. Stack OOF probs of each member: same rows, same class order.
 2. Mean per class over members; optional weights per member, chosen on other folds.
-3. Tune per-class thresholds with `best_f1` on mean OOF probs.
+3. Tune per-class thresholds with `Scores.best_f1` on mean OOF probs.
 4. Test: per member mean of 5 fold models (`test_probs`), then same mean and weights, then thresholds.
 
 ## Stacking with logistic regression
