@@ -12,6 +12,7 @@ Drawing image $k$ times = loss times $k$ in expectation. Effective VIP weight $k
 
 - Oversampling ×8 with unchanged `pos_weight` = 8× stronger push. `core.cv` (`fit_fold`) computes `pos_weight` from rows, not draws, so division by `oversample` explicit.
 - $k \cdot w$ fixed: only delivery differs.
+- Not exact: other VIP images' extra draws add negatives rows-based count misses. Motya 36.4 from rows ÷ 8, 38.1 from draws. Small, ignored.
 
 | | Moris | Motya | Biatrix |
 |---|---|---|---|

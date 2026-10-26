@@ -8,7 +8,7 @@ Selection metric: mAP.
 
 Thresholds: per class $t_c$, tuned on validation.
 
-Loss: `nn.BCEWithLogitsLoss`, full ratio `pos_weight` $w_c = (N - n_c)/n_c$ (`Config.pos_weight_power = 1.0`; code default 0.75 kept so exp01–exp08 configs reproduce). Reasoning: `sections/model/experiments/exp09_full_ratio_weight.md`, mAP 0.972 to 0.983, higher on both folds, smoother `val_map`. Config: `sections/model/configs/exp09_full_ratio_weight/resnet18.toml`.
+Loss: `nn.BCEWithLogitsLoss`, full ratio `pos_weight` $w_c = (N - n_c)/n_c$ with oversampling, power 0.75 without (`core.data.Sampling.power`; exp04–exp07 no longer reproduce). Reasoning: `sections/model/experiments/exp09_full_ratio_weight.md`, mAP 0.972 to 0.983, higher on both folds, smoother `val_map`. Config: `sections/model/configs/exp09_full_ratio_weight/resnet18.toml`.
 
 Validation: multilabel stratified 5-fold CV, mean of per-fold mAP.
 

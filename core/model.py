@@ -90,14 +90,14 @@ class ResnetConvBlock(nn.Module):
         super().__init__()
         
         conv1_stride = 2 if initial else 1
-        
+
         self.conv1 = ResnetConv(in_channels, out_channels, 3, stride=conv1_stride, padding=1, use_batchnorm=use_batchnorm)
         self.relu1 = nn.ReLU(inplace=True)
         self.conv2 = ResnetConv(out_channels, out_channels, 3, stride=1, padding=1, use_batchnorm=use_batchnorm)
         self.relu2 = nn.ReLU(inplace=True)
         
         self.shortcutConv = ResnetConv(in_channels, out_channels, 1, stride=conv1_stride, use_batchnorm=use_batchnorm) if initial else nn.Identity()
-        
+
     def forward(self, x):
         y1 = self.relu1(self.conv1(x))
         y2 = self.conv2(y1)

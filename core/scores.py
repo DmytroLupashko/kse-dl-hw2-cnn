@@ -45,7 +45,18 @@ class Scores:
             while hi < len(f1) - 1 and f1[hi + 1] >= f1.max() - margin:
                 hi += 1
             mid = (thr[lo] + thr[hi]) / 2
-            pred = self.probs[:, c] >= mid
-            tp = (pred & (self.y_true[:, c] == 1)).sum()
-            rows.append((mid, thr[lo], thr[hi], 2 * tp / (pred.sum() + self.y_true[:, c].sum())))
+            rows.append((mid, thr[lo], thr[hi], self._scores_at(c, mid)[2]))
         return pd.DataFrame(rows, index=CLASSES, columns=["threshold", "low", "high", "f1"])
+
+    def _scores_at(self, c, threshold):
+        """(precision, recall, F1) of class `c` predicting 1 if prob >= `threshold`."""
+        pred = self.probs[:, c] >= threshold
+        positives = self.y_true[:, c].sum()
+        tp = (pred & (self.y_true[:, c] == 1)).sum()
+        precision = tp / pred.sum() if pred.sum() else 0.0
+        return precision, tp / positives, 2 * tp / (pred.sum() + positives)
+
+    def fixed_f1(self, thresholds):
+        """Per class: given threshold (one per class of `CLASSES`), its precision, recall, F1."""
+        rows = [(t, *self._scores_at(c, t)) for c, t in enumerate(thresholds)]
+        return pd.DataFrame(rows, index=CLASSES, columns=["threshold", "precision", "recall", "f1"])

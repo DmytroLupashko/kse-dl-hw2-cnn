@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+@.claude/karpathy-guidelines.md
+
 Project: multilabel image classification, 5 classes, scored by Macro F1. Full task and submission format: `docs/overview.md`. Competition rules: `docs/rules.md` (no external data, no relabeling, pretrained weights only from timm or ImageNet). Current chosen setup (metric, loss, validation): `docs/configuration.md`.
 
 - Never execute notebooks at full scale.

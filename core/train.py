@@ -106,6 +106,8 @@ class TrainingRun:
             recipe["oversample"] = dm.oversample
         if dm.downsample != 1:
             recipe["downsample"] = dm.downsample
+        if dm.is_new:
+            recipe["datamodule"] = type(dm).__qualname__
         return hashlib.sha256(json.dumps(recipe, sort_keys=True, default=str).encode()).hexdigest()[:12]
 
     def best_checkpoint(self):

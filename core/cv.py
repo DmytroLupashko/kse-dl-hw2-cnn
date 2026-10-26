@@ -27,6 +27,7 @@ from huggingface_hub.utils import logging as hf_logging
 from core.augment import RECIPES, Validation
 from core.config import CLASSES, DEVICE, PROCESSED, SEED, VIP
 from core.data import KaggleDataModule, read_train
+from core.data_legacy import LegacyKaggleDataModule
 from core.model import LitCNNMultiLabel
 from core.scores import Scores
 from core.tracking import TrackedRun
@@ -48,7 +49,7 @@ class Config:
     augment: str = "default"  # key of `core.augment.RECIPES`
     oversample: int = 1  # VIP rows drawn this many times per epoch, VIP `pos_weight` divided by it; 1: plain shuffling
     downsample: float = 1.0  # non-VIP rows drawn this fraction of times per epoch, `pos_weight` counted over draws
-    pos_weight_power: float = 0.75  # `pos_weight` = ((N - n_c) / n_c) ** power; 1.0: full ratio
+    is_new: bool = False  # False: `core.data_legacy` sampling of finished runs; True: `core.data`, open to change
     n_other: int | None = None  # non-VIP rows kept per fold; None: full data
     batch_size: int = 32
     num_workers: int = 0
@@ -101,6 +102,10 @@ class Config:
         
         return pd.concat([df[vip], other])  # index kept: OOF rows map back to `read_train()` rows
 
+    @property
+    def data_module(self):
+        return KaggleDataModule if self.is_new else LegacyKaggleDataModule
+
     def run(self, fold):
         """`TrainingRun` of `fold`: MLflow run and checkpoint folder `<name> fold <fold>`."""
         return TrainingRun(self.experiment, f"{self.name} fold {fold}")
@@ -112,7 +117,7 @@ class Config:
 
     def predict_val(self, fold, tfms):
         """(probs, labels) of validation rows of `fold` by its trained network, images through `tfms` instead of `Validation`."""
-        dm = KaggleDataModule(self.read_data(), fold=fold, batch_size=self.batch_size, num_workers=self.num_workers, val_tfms=tfms)
+        dm = self.data_module(self.read_data(), fold=fold, batch_size=self.batch_size, num_workers=self.num_workers, val_tfms=tfms)
         dm.setup()
         return self.fold_model(fold).predict_probs(dm.val_dataloader())
 
@@ -185,7 +190,7 @@ class CrossValidator:
         """Returns (validation rows with probs, AP report, MLflow run id) of `fold`."""
         cfg = self.config
         is_val = (self.df["fold"] == fold).to_numpy()
-        dm = KaggleDataModule(
+        dm = cfg.data_module(
             self.df,
             fold=fold,
             batch_size=cfg.batch_size,
@@ -196,7 +201,7 @@ class CrossValidator:
             downsample=cfg.downsample,
         )
         model = LitCNNMultiLabel.build(
-            cfg.timm_model, cfg.torchvision_model, cfg.initial_lr, cfg.final_lr, dm.pos_weight(cfg.pos_weight_power)
+            cfg.timm_model, cfg.torchvision_model, cfg.initial_lr, cfg.final_lr, dm.pos_weight()
         )
         run_id = cfg.run(fold).fit(
             model, dm, cfg.epochs, reuse=not cfg.retrain, log_every_n_steps=cfg.log_every_n_steps

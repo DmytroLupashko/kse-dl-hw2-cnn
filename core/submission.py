@@ -2,7 +2,7 @@
 
 `Single(config)`: test probs averaged over folds, best-F1 thresholds. Ensembles of configs, plateau-F1 thresholds:
 `MeanEnsemble` (mean of members), `Stacking` (per class logistic regression on members' logits).
-CLI: `python -m core.submission <config.toml> [--submit]`
+CLI: `python -m core.submission <config.toml> [--thresholds T T T T T] [--submit]`
 Notebook: `Single(Config.from_toml(path)).write()`.
 CSV saved to `path` (`Single` default `data/submissions/<experiment>__<name>.csv`), unthresholded test probs next to it
 as `.parquet` (for ensembling).
@@ -61,15 +61,22 @@ class Submission:
 
 
 class Single(Submission):
-    """One model: saved CV run of `config`, test probs averaged over fold models, `best_f1` thresholds on pooled OOF rows.
-    Stored config used: CLI overrides at training kept."""
+    """One model: saved CV run of `config`, test probs averaged over fold models, `best_f1` thresholds on pooled OOF rows
+    (`fixed_thresholds` given: one value per class in `CLASSES` order instead). Stored config used: CLI overrides at
+    training kept."""
 
-    def __init__(self, config, path=None):
+    def __init__(self, config, path=None, fixed_thresholds=None):
         self.result = CVResult.load(config)
         self.config = self.result.config
-        super().__init__(path or SUBMISSIONS / f"{self.config.experiment}__{self.config.name}.csv")
+        if fixed_thresholds is not None and len(fixed_thresholds) != len(CLASSES):
+            raise ValueError(f"{len(fixed_thresholds)} fixed thresholds for {len(CLASSES)} classes")
+        self.fixed_thresholds = fixed_thresholds
+        suffix = "" if fixed_thresholds is None else "__fixed_" + "_".join(map(str, fixed_thresholds))
+        super().__init__(path or SUBMISSIONS / f"{self.config.experiment}__{self.config.name}{suffix}.csv")
 
     def thresholds(self):
+        if self.fixed_thresholds is not None:
+            return np.array(self.fixed_thresholds, dtype=float)
         return self.result.scores.best_f1()["threshold"].to_numpy()
 
     def test_probs(self, test):
@@ -173,10 +180,12 @@ class Stacking(Ensemble):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("config", type=Path)
+    parser.add_argument("--thresholds", type=float, nargs=len(CLASSES), help="fixed threshold per class; default OOF best-F1")
     parser.add_argument("--submit", action="store_true", help="upload CSV to Kaggle")
     args = parser.parse_args()
     config = Config.from_toml(args.config)
-    submission = Single(config)
+    submission = Single(config, fixed_thresholds=args.thresholds)
     submission.write()
     if args.submit:
-        submission.submit(f"{config.experiment} / {config.name}, folds {config.folds}, OOF best-F1 thresholds")
+        rule = "OOF best-F1 thresholds" if args.thresholds is None else f"fixed thresholds {args.thresholds}"
+        submission.submit(f"{config.experiment} / {config.name}, folds {config.folds}, {rule}")
