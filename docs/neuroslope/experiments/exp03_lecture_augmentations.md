@@ -8,7 +8,7 @@ add to plan same gradcam figures as in exp02
 
 ## Question
 
-Does ResNet-18 trained with Advanced CNN lecture augmentations give higher mean per-fold mAP on folds 0 and 1 than same model with current `core.data.dataset.train_tfms` (exp01)?
+Does ResNet-18 trained with Advanced CNN lecture augmentations give higher mean per-fold mAP on folds 0 and 1 than same model with current `dataset.dataset.train_tfms` (exp01)?
 
 ## Plan
 
@@ -21,19 +21,19 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp03_lecture_augmentations.ipynb](../../notebooks/experiments/exp03_lecture_augmentations.ipynb), config `configs/models/exp03_lecture_augmentations/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp03_lecture_augmentations.ipynb](../../../notebooks/experiments/exp03_lecture_augmentations.ipynb), config `configs/exp03_lecture_augmentations/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-lecture-augmentations` (one run per fold with `best_ap_<class>` metrics, run `summary`)
-- **What changes:** training augmentations. Lecture recipe (ResNet-18 transfer learning cell): `Resize(224)`, `HorizontalFlip(p=0.5)`, `VerticalFlip(p=0.5)`, `RandomBrightnessContrast(0.5, 0.5, p=0.5)`, `HueSaturationValue(20, 30, 20, p=0.5)`. Current (exp01): `Resize(224)`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate 0.1, scale 0.8–1.2, rotate ±15°, p=0.5)`. Lecture recipe added as `core.data.dataset.lecture_tfms`, chosen by new `Config` field `augment` (`"default"` or `"lecture"`); exp01 results unchanged, `train_tfms` remains the default.
-- **What stays fixed:** everything else from exp01 ResNet-18: `resnet18.a1_in1k` pretrained, Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `val_tfms`, mean = std = 0.5, weighted BCE from `docs/methods/configuration.md`, best checkpoint by `val_map`, folds 0 and 1, `SEED`; exp01 ResNet-18 results reused from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, not retrained. Grad-CAM code of exp02 notebook moved to `core.analysis.gradcam` (`grad_cam`, `GradCamFigures`), exp02 notebook uses it, its figures unchanged; figures `exp03_lecture_augmentations_grad_cam_<class>_<correct|incorrect>.png`. Test-time augmentation from lecture not part of this experiment.
+- **What changes:** training augmentations. Lecture recipe (ResNet-18 transfer learning cell): `Resize(224)`, `HorizontalFlip(p=0.5)`, `VerticalFlip(p=0.5)`, `RandomBrightnessContrast(0.5, 0.5, p=0.5)`, `HueSaturationValue(20, 30, 20, p=0.5)`. Current (exp01): `Resize(224)`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate 0.1, scale 0.8–1.2, rotate ±15°, p=0.5)`. Lecture recipe added as `dataset.dataset.lecture_tfms`, chosen by new `Config` field `augment` (`"default"` or `"lecture"`); exp01 results unchanged, `train_tfms` remains the default.
+- **What stays fixed:** everything else from exp01 ResNet-18: `resnet18.a1_in1k` pretrained, Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `val_tfms`, mean = std = 0.5, weighted BCE from `docs/neuroslope/methods/configuration.md`, best checkpoint by `val_map`, folds 0 and 1, `SEED`; exp01 ResNet-18 results reused from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, not retrained. Grad-CAM code of exp02 notebook moved to `analysis.gradcam` (`grad_cam`, `GradCamFigures`), exp02 notebook uses it, its figures unchanged; figures `exp03_lecture_augmentations_grad_cam_<class>_<correct|incorrect>.png`. Test-time augmentation from lecture not part of this experiment.
 - **Metric:** per-class AP and mAP on validation fold, mean over folds 0 and 1; difference counts only when same sign on both folds
 
 ## Fixes
 
 ## Results
 
-![Lecture demo augmentations](../figures/exp03_lecture_augmentations_demo.png)
+![Lecture demo augmentations](../../figures/exp03_lecture_augmentations_demo.png)
 
-![Training curves](../figures/exp03_lecture_augmentations_training.png)
+![Training curves](../../figures/exp03_lecture_augmentations_training.png)
 
 | augmentations | Cat | Dog | Moris | Motya | Biatrix | mAP |
 |---|---|---|---|---|---|---|
@@ -51,17 +51,17 @@ All plots follow `dataviz` skill.
 
 AP per class and mAP on validation part of folds 0 and 1, first table mean over 2 folds, second lecture minus current per fold.
 
-![Grad-CAM Moris correct](../figures/exp03_lecture_augmentations_grad_cam_moris_correct.png)
+![Grad-CAM Moris correct](../../figures/exp03_lecture_augmentations_grad_cam_moris_correct.png)
 
-![Grad-CAM Moris incorrect](../figures/exp03_lecture_augmentations_grad_cam_moris_incorrect.png)
+![Grad-CAM Moris incorrect](../../figures/exp03_lecture_augmentations_grad_cam_moris_incorrect.png)
 
-![Grad-CAM Motya correct](../figures/exp03_lecture_augmentations_grad_cam_motya_correct.png)
+![Grad-CAM Motya correct](../../figures/exp03_lecture_augmentations_grad_cam_motya_correct.png)
 
-![Grad-CAM Motya incorrect](../figures/exp03_lecture_augmentations_grad_cam_motya_incorrect.png)
+![Grad-CAM Motya incorrect](../../figures/exp03_lecture_augmentations_grad_cam_motya_incorrect.png)
 
-![Grad-CAM Biatrix correct](../figures/exp03_lecture_augmentations_grad_cam_biatrix_correct.png)
+![Grad-CAM Biatrix correct](../../figures/exp03_lecture_augmentations_grad_cam_biatrix_correct.png)
 
-![Grad-CAM Biatrix incorrect](../figures/exp03_lecture_augmentations_grad_cam_biatrix_incorrect.png)
+![Grad-CAM Biatrix incorrect](../../figures/exp03_lecture_augmentations_grad_cam_biatrix_incorrect.png)
 
 Grad-CAM on out-of-fold rows of folds 0 and 1, each class binarized at its best-F1 threshold of lecture model (Moris 0.810, Motya 0.928, Biatrix 0.987). Incorrect figures shorter where errors run out: Moris 2 false positives plus 1 false negative, Biatrix 1 false negative only.
 
