@@ -17,27 +17,27 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp12_grad_cam_train_val.ipynb](../../notebooks/experiments/exp12_grad_cam_train_val.ipynb), no training
+- **Notebook:** [exp12_grad_cam_train_val.ipynb](../../../notebooks/experiments/exp12_grad_cam_train_val.ipynb), no training
 - **Tracking:** none
 - **What changes:** model per image: fold model that held it out (validation) or one that trained on it (train)
-- **What stays fixed:** exp11 checkpoints `checkpoints/cnn-model-resnet18-5fold/ResNet-18 fold {0..4}/`, OOF from `data/processed/cv/cnn-model-resnet18-5fold/ResNet-18/`, `core.analysis.gradcam` on `layer4`, `val_tfms` 224 px
+- **What stays fixed:** exp11 checkpoints `checkpoints/cnn-model-resnet18-5fold/ResNet-18 fold {0..4}/`, OOF from `data/processed/cv/cnn-model-resnet18-5fold/ResNet-18/`, `analysis.gradcam` on `layer4`, `val_tfms` 224 px
 - **Metric:** none, visual
 
 ## Fixes
 
 ## Results
 
-![Moris validation](../figures/exp12_grad_cam_train_val_moris_validation.png)
+![Moris validation](../../figures/exp12_grad_cam_train_val_moris_validation.png)
 
-![Moris train](../figures/exp12_grad_cam_train_val_moris_train.png)
+![Moris train](../../figures/exp12_grad_cam_train_val_moris_train.png)
 
-![Motya validation](../figures/exp12_grad_cam_train_val_motya_validation.png)
+![Motya validation](../../figures/exp12_grad_cam_train_val_motya_validation.png)
 
-![Motya train](../figures/exp12_grad_cam_train_val_motya_train.png)
+![Motya train](../../figures/exp12_grad_cam_train_val_motya_train.png)
 
-![Biatrix validation](../figures/exp12_grad_cam_train_val_biatrix_validation.png)
+![Biatrix validation](../../figures/exp12_grad_cam_train_val_biatrix_validation.png)
 
-![Biatrix train](../figures/exp12_grad_cam_train_val_biatrix_train.png)
+![Biatrix train](../../figures/exp12_grad_cam_train_val_biatrix_train.png)
 
 All labeled positives per VIP class (56 Moris, 42 Motya, 41 Biatrix), sorted by out-of-fold prob; caption: fold model, its prob, green at or above submission threshold (Moris 0.840, Motya 0.940, Biatrix 0.939), red below. Validation misses: Moris 8, Motya 9, Biatrix 3; train: none, every p ≥ 0.99.
 
