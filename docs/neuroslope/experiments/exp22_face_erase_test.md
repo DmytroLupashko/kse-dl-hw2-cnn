@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp22_face_erase_test.ipynb](../../notebooks/experiments/exp22_face_erase_test.ipynb), no training
+- **Notebook:** [exp22_face_erase_test.ipynb](../../../notebooks/experiments/exp22_face_erase_test.ipynb), no training
 - **Tracking:** none
 - **What changes:** input only: face box from `data/processed/boxes_face.csv` (exp21 boxes, exp20 Grad-CAM ≥ 0.8 of max, fold model that held image out) filled with normalization mean (gray 128); control: same-size box, random place not overlapping face, same fill, fixed seed.
 - **What stays fixed:** exp16, exp20, exp21 fold models of folds 0 and 1, each image scored by model that held it out; `val_tfms` 224 px; thresholds best-F1 on clean OOF rows, per model; all generic Cat (1994 of 1995) and Dog (1993 of 1994) positives of folds 0 and 1 with face box.
@@ -27,7 +27,7 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Recall clean, random box, face erased](../figures/exp22_face_erase_test_recall.png)
+![Recall clean, random box, face erased](../../figures/exp22_face_erase_test_recall.png)
 
 Recall at own best-F1 threshold, generic positives of folds 0 and 1 (1994 Cat, 1993 Dog), each image by fold model that held it out; clean, random box, face erased:
 
@@ -39,9 +39,9 @@ Recall at own best-F1 threshold, generic positives of folds 0 and 1 (1994 Cat, 1
 
 Random box costs at most 0.006, so face-erased drop is cost of losing face: Dog −0.085, −0.035, −0.006; Cat −0.012, −0.011, −0.011.
 
-![Cat, face erased](../figures/exp22_face_erase_test_grad_cam_cat.png)
+![Cat, face erased](../../figures/exp22_face_erase_test_grad_cam_cat.png)
 
-![Dog, face erased](../figures/exp22_face_erase_test_grad_cam_dog.png)
+![Dog, face erased](../../figures/exp22_face_erase_test_grad_cam_dog.png)
 
 exp19 images with face box erased, maps of exp16, exp20, exp21 stacked. Cat boxes often cover nose and mouth only, eyes stay visible (white cats, tabby close-ups); all three models keep heat on eyes and forehead above box. Dog: exp21 heat on body when snout gone (terrier on grass whole body, chihuahua body, Boston terrier chest p 0.903 vs exp20 0.297, exp16 0.034). Figures saved from notebook outputs (save cell not run).
 
