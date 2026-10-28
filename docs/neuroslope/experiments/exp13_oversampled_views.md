@@ -16,21 +16,21 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp13_oversampled_views.ipynb](../../notebooks/experiments/exp13_oversampled_views.ipynb), no training
+- **Notebook:** [exp13_oversampled_views.ipynb](../../../notebooks/experiments/exp13_oversampled_views.ipynb), no training
 - **Tracking:** none
 - **What changes:** nothing trained; one epoch of sampler indices drawn, augmentations applied per draw as in training
-- **What stays fixed:** exp11 config `configs/models/exp11_resnet18_5fold/resnet18.yaml`: `oversample = 8`, `augment = "default"` (`core.data.dataset.train_tfms`), 224 px, fold 0 data module `core.data.dataset.KaggleDataModule`, `SEED`
+- **What stays fixed:** exp11 config `configs/exp11_resnet18_5fold/resnet18.yaml`: `oversample = 8`, `augment = "default"` (`dataset.dataset.train_tfms`), 224 px, fold 0 data module `dataset.dataset.KaggleDataModule`, `SEED`
 - **Metric:** none, visual; draws per image
 
 ## Fixes
 
 ## Results
 
-![Moris](../figures/exp13_oversampled_views_moris.png)
+![Moris](../../figures/exp13_oversampled_views_moris.png)
 
-![Motya](../figures/exp13_oversampled_views_motya.png)
+![Motya](../../figures/exp13_oversampled_views_motya.png)
 
-![Biatrix](../figures/exp13_oversampled_views_biatrix.png)
+![Biatrix](../../figures/exp13_oversampled_views_biatrix.png)
 
 8 random labeled positives per VIP class, fold 0 training part; row: original, then every draw of one simulated epoch through default augmentations. Draws per epoch: VIP mean 7.71, other images 1.00; shown rows 2 to 11 draws.
 
