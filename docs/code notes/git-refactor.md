@@ -28,3 +28,7 @@ Goal: separate experiments from each other.
 Experiment branches "communicate" with each other threw main (rebasing) and cherry picking.
 
 Each experiment does not contain artifacts of previous experiments, if not needed.
+
+## How code should look like?
+
+Inside each experiment code should be as and readable simple as possible, while still be somewhat extendible (by using standard practices).
