@@ -16,7 +16,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp39_stacking_logreg.ipynb](../../notebooks/experiments/exp39_stacking_logreg.ipynb)
+- **Notebook:** [exp39_stacking_logreg.ipynb](../../../notebooks/experiments/exp39_stacking_logreg.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** combiner: one `LogisticRegression` per class on members' logits of that class (4 features), instead of mean of probs.
   - Stacked OOF probs cross-fold: each fold predicted by meta-model fit on other 4 folds.
@@ -34,7 +34,7 @@ separately add figure for F1 threshold curves for C=0.1 VIPs, where best vs plat
 
 ## Results
 
-![F1 curves](../figures/exp39_stacking_logreg_f1_curves.png)
+![F1 curves](../../figures/exp39_stacking_logreg_f1_curves.png)
 
 F1 per class against threshold, pooled out-of-fold rows of folds 0–4; stacking probs cross-fold (meta-model fit on other 4 folds).
 
@@ -60,7 +60,7 @@ F1 per class against threshold, pooled out-of-fold rows of folds 0–4; stacking
 
 Logistic regression coefficient per member logit, mean ± standard deviation over 5 fits (each fit on 4 folds); per-fold values in notebook.
 
-![C = 0.1 peak vs plateau](../figures/exp39_stacking_logreg_c01_plateau.png)
+![C = 0.1 peak vs plateau](../../figures/exp39_stacking_logreg_c01_plateau.png)
 
 Stacking `C = 0.1`, VIP classes; plateau = F1 within 0.05 of max; best_t peak, mean_t plateau middle.
 
