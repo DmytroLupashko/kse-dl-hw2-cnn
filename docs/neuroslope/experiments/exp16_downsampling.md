@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp16_downsampling.ipynb](../../notebooks/experiments/exp16_downsampling.ipynb), config `configs/models/exp16_downsampling/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp16_downsampling.ipynb](../../../notebooks/experiments/exp16_downsampling.ipynb), config `configs/exp16_downsampling/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-downsampling`
 - **What changes:** `downsample = 0.2`: each epoch random 20% of non-VIP rows (Cat, Dog, none), all VIP rows; `pos_weight` computed on sampled epoch, so VIP weight drops (Moris ~27 to ~7).
 - **What stays fixed:** exp11 setup, 10 epochs (so ~4× fewer steps), folds 0 and 1; exp11 results reused.
@@ -27,21 +27,21 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Precision-recall curves](../figures/exp16_downsampling_pr_curves.png)
+![Precision-recall curves](../../figures/exp16_downsampling_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows): Moris 0.945 to 0.947, Motya 0.910 to 0.927, Biatrix 0.970 to 0.988, Cat, Dog unchanged (0.999, 0.998 to 0.997).
 
-![Moris validation](../figures/exp16_downsampling_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp16_downsampling_grad_cam_moris_validation.png)
 
-![Moris train](../figures/exp16_downsampling_grad_cam_moris_train.png)
+![Moris train](../../figures/exp16_downsampling_grad_cam_moris_train.png)
 
-![Motya validation](../figures/exp16_downsampling_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp16_downsampling_grad_cam_motya_validation.png)
 
-![Motya train](../figures/exp16_downsampling_grad_cam_motya_train.png)
+![Motya train](../../figures/exp16_downsampling_grad_cam_motya_train.png)
 
-![Biatrix validation](../figures/exp16_downsampling_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp16_downsampling_grad_cam_biatrix_validation.png)
 
-![Biatrix train](../figures/exp16_downsampling_grad_cam_biatrix_train.png)
+![Biatrix train](../../figures/exp16_downsampling_grad_cam_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix), sorted by out-of-fold prob; caption: fold model, its prob, green at or above best-F1 threshold (Moris 0.894, Motya 0.553, Biatrix 0.853), red below. Validation misses: Moris 4, Motya 2, Biatrix 0; train: none, every p ≥ 0.999.
 
