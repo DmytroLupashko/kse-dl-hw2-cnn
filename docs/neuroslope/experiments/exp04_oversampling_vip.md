@@ -16,7 +16,7 @@ Does VIP oversampling beat plain shuffling (exp01) for ResNet-18?
 
 ## Setup
 
-- **Notebook:** [exp04_oversampling_vip.ipynb](../../notebooks/experiments/exp04_oversampling_vip.ipynb)
+- **Notebook:** [exp04_oversampling_vip.ipynb](../../../notebooks/experiments/exp04_oversampling_vip.ipynb)
 - **Tracking:** `cnn-model-oversampling-vip`
 - **What changes:** VIP oversampling
   - VIP rows drawn 8 times per epoch, `oversample = 8`
@@ -28,7 +28,7 @@ Does VIP oversampling beat plain shuffling (exp01) for ResNet-18?
 
 ## Results
 
-![Training curves](../figures/exp04_oversampling_vip_training.png)
+![Training curves](../../figures/exp04_oversampling_vip_training.png)
 
 | sampling | Cat | Dog | Moris | Motya | Biatrix | mAP |
 |---|---|---|---|---|---|---|
@@ -46,17 +46,17 @@ Does VIP oversampling beat plain shuffling (exp01) for ResNet-18?
 
 Second table: oversampling minus plain, per fold.
 
-![Grad-CAM Moris correct](../figures/exp04_oversampling_vip_grad_cam_moris_correct.png)
+![Grad-CAM Moris correct](../../figures/exp04_oversampling_vip_grad_cam_moris_correct.png)
 
-![Grad-CAM Moris incorrect](../figures/exp04_oversampling_vip_grad_cam_moris_incorrect.png)
+![Grad-CAM Moris incorrect](../../figures/exp04_oversampling_vip_grad_cam_moris_incorrect.png)
 
-![Grad-CAM Motya correct](../figures/exp04_oversampling_vip_grad_cam_motya_correct.png)
+![Grad-CAM Motya correct](../../figures/exp04_oversampling_vip_grad_cam_motya_correct.png)
 
-![Grad-CAM Motya incorrect](../figures/exp04_oversampling_vip_grad_cam_motya_incorrect.png)
+![Grad-CAM Motya incorrect](../../figures/exp04_oversampling_vip_grad_cam_motya_incorrect.png)
 
-![Grad-CAM Biatrix correct](../figures/exp04_oversampling_vip_grad_cam_biatrix_correct.png)
+![Grad-CAM Biatrix correct](../../figures/exp04_oversampling_vip_grad_cam_biatrix_correct.png)
 
-![Grad-CAM Biatrix incorrect](../figures/exp04_oversampling_vip_grad_cam_biatrix_incorrect.png)
+![Grad-CAM Biatrix incorrect](../../figures/exp04_oversampling_vip_grad_cam_biatrix_incorrect.png)
 
 Each class at best-F1 threshold. Incorrect figures short: few errors left.
 
