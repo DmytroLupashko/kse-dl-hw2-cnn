@@ -1,15 +1,15 @@
-name: "ResNet-18 new augmentations"
+name: "ResNet-18 box crop"
 experiment: "cnn-model-v3-ablation"
 data:
   img_size: 224
   augment:
-    class_path: core.data.augment.recipes.V3NoCrop  # `core.data.augment.V3NoCrop`: v3 without box-safe crop
+    class_path: core.boxes.recipes.BoxCrop  # `core.boxes.BoxCrop`: exp04 augmentations plus box-safe crop
   oversample: 8  # VIP rows 8 times per epoch, VIP pos_weight / 8
   batch_size: 64
   num_workers: 4
 model:
   net:
-    class_path: core.training.model.timm_net
+    class_path: training.model.timm_net
     init_args:
       model_name: "resnet18.a1_in1k"
       pretrained: true

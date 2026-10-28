@@ -18,11 +18,11 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp07_v3_ablation.ipynb](../../notebooks/experiments/exp07_v3_ablation.ipynb), training `core.training.cv`
-  - `configs/models/exp07_v3_ablation/resnet18_box_crop.yaml`
-  - `configs/models/exp07_v3_ablation/resnet18_new_aug.yaml`
+- **Notebook:** [exp07_v3_ablation.ipynb](../../../notebooks/experiments/exp07_v3_ablation.ipynb), training `training.cv`
+  - `configs/exp07_v3_ablation/resnet18_box_crop.yaml`
+  - `configs/exp07_v3_ablation/resnet18_new_aug.yaml`
 - **Tracking:** `cnn-model-v3-ablation`
-- **What changes:** training augmentations, two new recipes in `core.data.dataset`. With exp04 and exp06 they fill 2 × 2 design:
+- **What changes:** training augmentations, two new recipes in `dataset.dataset`. With exp04 and exp06 they fill 2 × 2 design:
 
   | | no crop | box-safe crop |
   |---|---|---|
@@ -65,7 +65,7 @@ All plots follow `dataviz` skill.
 
 AP per class and mAP of best checkpoint (by `val_map`), validation rows of folds 0 and 1, mean over folds; bold: effect with same sign on both folds; interaction = v3 − box crop − new augmentations + exp04.
 
-![Validation mAP per epoch](../figures/exp07_v3_ablation_val_map.png)
+![Validation mAP per epoch](../../figures/exp07_v3_ablation_val_map.png)
 
 ## AI Summary
 
