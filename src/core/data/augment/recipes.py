@@ -1,39 +1,23 @@
 """Training recipes as class tree: subclass extends parent's transform list via `super().transforms()`.
 
-`RECIPES[Config.augment](size).compose()` -> albumentations Compose; validation: `Validation(size).compose()`.
+YAML `data.augment` block (`class_path`) names recipe class: `KaggleDataModule` builds it with `img_size`, `.compose()` -> albumentations Compose; validation: `Validation(size).compose()`.
 """
 import albumentations as A
 import cv2
 from albumentations.pytorch import ToTensorV2
 
-from ..config import IMG_SIZE, MEAN, PROCESSED, STD
-from .ops import EraseBoxes, NonVipDropout, NonVipImageCompression, NonVipToGray, PasteBoxes
-
-BOXES = PROCESSED / "boxes.csv"  # Grad-CAM pseudo-boxes of training images, written by `python -m core.boxes`
-FACE_BOXES = PROCESSED / "boxes_face.csv"  # Grad-CAM hot core of Cat, Dog (model exp21), `python -m core.boxes --face`
-HEAD_BOXES = PROCESSED / "boxes_head.csv"  # face boxes, Cat grown to head and ears (model exp24), `python -m core.boxes --head`
+from ...training.config import IMG_SIZE, MEAN, STD
+from .ops import NonVipDropout, NonVipImageCompression, NonVipToGray
 
 
 class Recipe:
-    """Image transform for `size` px images: `transforms()`, then Normalize and ToTensorV2.
-    `boxes` set: Compose takes pseudo-boxes of that file (`bboxes`, `box_labels`, passed by `RowTransform`)."""
-
-    boxes = None
+    """Image transform for `size` px images: `transforms()`, then Normalize and ToTensorV2; `compose_kw` passed to Compose."""
 
     def __init__(self, size=IMG_SIZE):
         self.size = size
 
-    def transforms(self):
-        raise NotImplementedError
-
-    def compose(self):
-        tfms = [*self.transforms(), A.Normalize(MEAN, STD), ToTensorV2()]
-        if self.boxes is None:
-            return A.Compose(tfms)
-        bbox_params = A.BboxParams(format="albumentations", label_fields=["box_labels"], clip=True)
-        compose = A.Compose(tfms, bbox_params=bbox_params)
-        compose.boxes_path = self.boxes
-        return compose
+    def compose(self, **compose_kw):
+        return A.Compose([*self.transforms(), A.Normalize(MEAN, STD), ToTensorV2()], **compose_kw)
 
 
 class Validation(Recipe):
@@ -73,6 +57,7 @@ class V2(Recipe):
 
     def transforms(self):
         size = self.size
+
         return [
             A.Resize(size, size),
             A.HorizontalFlip(p=0.5),
@@ -138,6 +123,7 @@ class GridDropout(Recipe):
 
     def transforms(self):
         size = self.size
+
         return [
             A.Resize(size, size),
             A.HorizontalFlip(p=0.5),
@@ -155,67 +141,35 @@ class GridDropout(Recipe):
         ]
 
 
-class BoxSafe(Recipe):
-    """Mixin: box-safe crop in front of parent recipe, every pseudo-box kept whole."""
-
-    boxes = BOXES
-
-    def transforms(self):
-        return [A.BBoxSafeRandomCrop(erosion_rate=0.0, p=1), *super().transforms()]
-
-
-class V3(BoxSafe, V3NoCrop):
-    """Augmentations v3 (model exp06): box-safe crop plus `V3NoCrop`."""
-
-
-class BoxCrop(BoxSafe, Default):
-    """Default augmentations (exp04) with box-safe crop in front (model exp07)."""
-
-
-class AttentionDrop(Default):
-    """Default augmentations (exp04) with pseudo-box erase in front (model exp14)."""
-
-    boxes = BOXES
-
-    def transforms(self):
-        return [EraseBoxes(), *super().transforms()]
-
-
-class Paste(Default):
-    """Default augmentations (exp04) with background paste in front (model exp17)."""
-
-    boxes = BOXES
-
-    def transforms(self):
-        return [PasteBoxes(), *super().transforms()]
-
-
-class CoarseDropoutNonVip(Default):
+class CoarseDropoutNonVip(Recipe):
     """Default augmentations (exp04) with colored holes on non-VIP rows after flip (model exp20)."""
 
     def transforms(self):
-        resize, flip, *rest = super().transforms()
-        # random color per hole: black would mimic Moris fur; VIP rows untouched, coat pattern stays (exp18)
-        holes = NonVipDropout(
-            num_holes_range=(1, 4), hole_height_range=(0.1, 0.25), hole_width_range=(0.1, 0.25), fill="random_uniform", p=0.5
-        )
-        return [resize, flip, holes, *rest]
+        return [
+            A.Resize(self.size, self.size),
+            A.HorizontalFlip(p=0.5),
+            # random color per hole: black would mimic Moris fur; VIP rows untouched, coat pattern stays (exp18)
+            NonVipDropout(
+                num_holes_range=(1, 4), hole_height_range=(0.1, 0.25), hole_width_range=(0.1, 0.25), fill="random_uniform", p=0.5
+            ),
+            A.RandomBrightnessContrast(p=0.5),
+            A.Affine(translate_percent=0.1, scale=(0.8, 1.2), rotate=(-15, 15), p=0.5),
+        ]
 
 
 class Jpeg(CoarseDropoutNonVip):
-    """exp20 recipe with JPEG quality 10 on half of training draws (model exp28); `compression` class picks rows."""
-
-    compression = A.ImageCompression
+    """exp20 recipe with JPEG quality 10 on half of training draws (model exp28)."""
 
     def transforms(self):
         # last before Normalize: model sees block artefacts as encoded; fur, whiskers, eyes lost first, outline kept
-        return [*super().transforms(), self.compression(quality_range=(10, 10), p=0.5)]
+        return [*super().transforms(), A.ImageCompression(quality_range=(10, 10), p=0.5)]
 
 
-class JpegNonVip(Jpeg):
+class JpegNonVip(CoarseDropoutNonVip):
     """`Jpeg` on non-VIP rows only."""
 
-    compression = NonVipImageCompression
+    def transforms(self):
+        return [*super().transforms(), NonVipImageCompression(quality_range=(10, 10), p=0.5)]
 
 
 class GrayNonVip(CoarseDropoutNonVip):
@@ -224,39 +178,3 @@ class GrayNonVip(CoarseDropoutNonVip):
     def transforms(self):
         # after holes: colored holes turn gray too, no color cue left on gray draws
         return [*super().transforms(), NonVipToGray(p=0.5)]
-
-
-class FaceErase(CoarseDropoutNonVip):
-    """exp20 recipe with Cat, Dog boxes of `boxes` erased on non-VIP rows in front (model exp21: face boxes)."""
-
-    boxes = FACE_BOXES
-
-    def transforms(self):
-        # random color: black would mimic Moris fur
-        return [EraseBoxes(random_fill=True, skip_vip=True), *super().transforms()]
-
-
-class HeadErase(FaceErase):
-    """exp21 recipe with Cat head boxes instead of face boxes (model exp24)."""
-
-    boxes = HEAD_BOXES
-
-
-# `Config.augment`: recipe class taking image size
-RECIPES = {
-    "default": Default,
-    "lecture": Lecture,
-    "v2": V2,
-    "v3": V3,
-    "v3_no_crop": V3NoCrop,
-    "box_crop": BoxCrop,
-    "attention_drop": AttentionDrop,
-    "paste": Paste,
-    "grid_dropout": GridDropout,
-    "coarse_dropout_non_vip": CoarseDropoutNonVip,
-    "jpeg_non_vip": JpegNonVip,
-    "jpeg_all": Jpeg,
-    "gray_non_vip": GrayNonVip,
-    "face_erase": FaceErase,
-    "head_erase": HeadErase,
-}

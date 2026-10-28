@@ -1,30 +1,62 @@
-"""Lightning wrapper of any CNN with `num_classes` logits: weighted BCE loss, mAP, Adam + cosine schedule."""
+"""Lightning wrapper of any CNN with one logit per class: Adam, cosine schedule per batch, BCE, mAP.
+
+Networks: YAML `model.net` block (`class_path`, `init_args`) names `nn.Module` class or function returning one:
+`timm_net`, `alexnet_imagenet`, own classes below.
+"""
+
+import importlib
+import logging
+import warnings
+
 import lightning.pytorch as pl
 import timm
 import torch
-import torch.nn as nn
-import torchmetrics
 import torchvision
-from tqdm import tqdm
+from torch import nn
 
+from ..data.dataset import sample_weights
 from .config import CLASSES
 
+warnings.filterwarnings(
+    "ignore", message="Attribute 'net' is an instance"
+)  # kept on purpose: checkpoint rebuilds `net` from its YAML block
 
-def alexnet_imagenet(num_classes):
+
+def timm_net(model_name: str, pretrained: bool = True) -> nn.Module:
+    """timm model `model_name` with one logit per class; typed wrapper: `timm.create_model` takes `**kwargs`, which
+    LightningCLI does not accept."""
+    return timm.create_model(
+        model_name, pretrained=pretrained, num_classes=len(CLASSES)
+    )
+
+
+def alexnet_imagenet(num_classes: int = len(CLASSES)) -> nn.Module:
     """torchvision AlexNet with ImageNet-1k weights (no timm version); last layer replaced for `num_classes`."""
-    model = torchvision.models.alexnet(weights=torchvision.models.AlexNet_Weights.IMAGENET1K_V1)
+    model = torchvision.models.alexnet(
+        weights=torchvision.models.AlexNet_Weights.IMAGENET1K_V1
+    )
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+
     return model
 
-
-TORCHVISION_MODELS = {"alexnet": alexnet_imagenet}  # name: builder taking `num_classes`, ImageNet weights
 
 class ConvBlock(nn.Module):
     """Conv, BatchNorm (`use_batchnorm`, else Identity), ReLU, then 3x3 stride-2 max pool when `pool`."""
 
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, pool=False, use_batchnorm=False):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=1,
+        padding=0,
+        pool=False,
+        use_batchnorm=False,
+    ):
         super().__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding)
+        self.conv = nn.Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
         self.bn = nn.BatchNorm2d(out_channels) if use_batchnorm else nn.Identity()
         self.relu = nn.ReLU(inplace=True)
         self.pool = nn.MaxPool2d(kernel_size=3, stride=2) if pool else nn.Identity()
@@ -33,226 +65,255 @@ class ConvBlock(nn.Module):
         return self.pool(self.relu(self.bn(self.conv(x))))
 
 
-class DenseBlock(nn.Module):
-    """Linear, ReLU, Dropout."""
-
-    def __init__(self, in_features, out_features, dropout=0):
-        super().__init__()
-        self.fc = nn.Linear(in_features, out_features)
-        self.relu = nn.ReLU(inplace=True)
-        self.dropout = nn.Dropout(p=dropout)
-
-    def forward(self, x):
-        return self.dropout(self.relu(self.fc(x)))
-
-
-class AlexNet(nn.Module):
-    """AlexNet of Lecture 1 (`Old_Good_CNNs`), trained from scratch: five `ConvBlock`s, two `DenseBlock`s, linear head.
-    Adaptive pool to 6x6 before head: no-op at lecture's 227 px input, lets 224 px work; inputs below ~200 px too small.
-    Lecture's hooks on `conv1`..`conv5` go on `conv1.conv`..`conv5.conv`."""
-
-    def __init__(self, num_classes, use_batchnorm=False, dropout=0.6):
-        super().__init__()
-        self.conv1 = ConvBlock(3, 96, kernel_size=11, stride=4, pool=True, use_batchnorm=use_batchnorm)
-        self.conv2 = ConvBlock(96, 256, kernel_size=5, padding=2, pool=True, use_batchnorm=use_batchnorm)
-        self.conv3 = ConvBlock(256, 384, kernel_size=3, padding=1, use_batchnorm=use_batchnorm)
-        self.conv4 = ConvBlock(384, 384, kernel_size=3, padding=1, use_batchnorm=use_batchnorm)
-        self.conv5 = ConvBlock(384, 256, kernel_size=3, padding=1, pool=True, use_batchnorm=use_batchnorm)
-        self.pool = nn.AdaptiveAvgPool2d(6)
-        self.fc1 = DenseBlock(256 * 6 * 6, 4096, dropout)
-        self.fc2 = DenseBlock(4096, 4096, dropout)
-        self.head = nn.Linear(4096, num_classes)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        x = torch.flatten(self.pool(x), 1)
-        x = self.fc1(x)
-        x = self.fc2(x)
-        return self.head(x)
-      
-
 class ResnetConv(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, use_batchnorm=True):
-      super().__init__()
-      self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding)
-      self.bn = nn.BatchNorm2d(out_channels) if use_batchnorm else nn.Identity()
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride=1,
+        padding=0,
+        use_batchnorm=True,
+    ):
+        super().__init__()
+        self.conv = nn.Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        self.bn = nn.BatchNorm2d(out_channels) if use_batchnorm else nn.Identity()
 
     def forward(self, x):
         return self.bn(self.conv(x))
 
+
 # I did
 class ResnetConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, use_batchnorm = True, initial=False):
+    def __init__(self, in_channels, out_channels, use_batchnorm=True, initial=False):
         super().__init__()
-        
         conv1_stride = 2 if initial else 1
-
-        self.conv1 = ResnetConv(in_channels, out_channels, 3, stride=conv1_stride, padding=1, use_batchnorm=use_batchnorm)
+        self.conv1 = ResnetConv(
+            in_channels,
+            out_channels,
+            3,
+            stride=conv1_stride,
+            padding=1,
+            use_batchnorm=use_batchnorm,
+        )
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv2 = ResnetConv(out_channels, out_channels, 3, stride=1, padding=1, use_batchnorm=use_batchnorm)
+        self.conv2 = ResnetConv(
+            out_channels,
+            out_channels,
+            3,
+            stride=1,
+            padding=1,
+            use_batchnorm=use_batchnorm,
+        )
         self.relu2 = nn.ReLU(inplace=True)
-        
-        self.shortcutConv = ResnetConv(in_channels, out_channels, 1, stride=conv1_stride, use_batchnorm=use_batchnorm) if initial else nn.Identity()
+        self.shortcutConv = (
+            ResnetConv(
+                in_channels,
+                out_channels,
+                1,
+                stride=conv1_stride,
+                use_batchnorm=use_batchnorm,
+            )
+            if initial
+            else nn.Identity()
+        )
 
     def forward(self, x):
         y1 = self.relu1(self.conv1(x))
         y2 = self.conv2(y1)
-        
         x1 = self.shortcutConv(x)
-        
+
         return self.relu2(y2 + x1)
+
 
 # I did, unfinished
 class ResnetFromPaper(nn.Module):
-  # By default Paper uses batchnorm
-  # It does not use dropout
-  def __init__(self, num_classes, use_batchnorm = True):
-    super().__init__()
-    
-    self.inputConv = ConvBlock(3, 64, 7, stride=2, padding=3, use_batchnorm=use_batchnorm)
-    self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-    
-    self.resnetBlock64_1 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
-    self.resnetBlock64_2 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
-    self.resnetBlock64_3 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
-    
-    self.resnetBlock128_1 = ResnetConvBlock(64, 128, use_batchnorm=use_batchnorm, initial=True)
-    self.resnetBlock128_2 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
-    self.resnetBlock128_3 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
-    self.resnetBlock128_4 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
-    
-    self.resnetBlock256_1 = ResnetConvBlock(128, 256, use_batchnorm=use_batchnorm, initial=True)
-    self.resnetBlock256_2 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
-    self.resnetBlock256_3 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
-    self.resnetBlock256_4 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
-    self.resnetBlock256_5 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
-    self.resnetBlock256_6 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
-    
-    self.resnetBlock512_1 = ResnetConvBlock(256, 512, use_batchnorm=use_batchnorm, initial=True)
-    self.resnetBlock512_2 = ResnetConvBlock(512, 512, use_batchnorm=use_batchnorm)
-    self.resnetBlock512_3 = ResnetConvBlock(512, 512, use_batchnorm=use_batchnorm)
-    
-    self.avgPool = nn.AdaptiveAvgPool2d(1)
-    self.head = nn.Linear(512, num_classes)
-    
-  def forward(self, x):
-    x = self.inputConv(x)
-    x = self.pool1(x)
-    
-    x = self.resnetBlock64_1(x)
-    x = self.resnetBlock64_2(x)
-    x = self.resnetBlock64_3(x)
+    # By default Paper uses batchnorm
+    # It does not use dropout
+    def __init__(self, num_classes, use_batchnorm=True):
+        super().__init__()
 
-    x = self.resnetBlock128_1(x)
-    x = self.resnetBlock128_2(x)
-    x = self.resnetBlock128_3(x)
-    x = self.resnetBlock128_4(x)
-    
-    x = self.resnetBlock256_1(x)
-    x = self.resnetBlock256_2(x)
-    x = self.resnetBlock256_3(x)
-    x = self.resnetBlock256_4(x)
-    x = self.resnetBlock256_5(x)
-    x = self.resnetBlock256_6(x)
-    
-    x = self.resnetBlock512_1(x)
-    x = self.resnetBlock512_2(x)
-    x = self.resnetBlock512_3(x)
-    
-    x = self.avgPool(x)
-    x = torch.flatten(x, 1)
-    
-    return self.head(x)
+        self.inputConv = ConvBlock(
+            3, 64, 7, stride=2, padding=3, use_batchnorm=use_batchnorm
+        )
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        self.resnetBlock64_1 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
+        self.resnetBlock64_2 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
+        self.resnetBlock64_3 = ResnetConvBlock(64, 64, use_batchnorm=use_batchnorm)
+
+        self.resnetBlock128_1 = ResnetConvBlock(
+            64, 128, use_batchnorm=use_batchnorm, initial=True
+        )
+        self.resnetBlock128_2 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
+        self.resnetBlock128_3 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
+        self.resnetBlock128_4 = ResnetConvBlock(128, 128, use_batchnorm=use_batchnorm)
+
+        self.resnetBlock256_1 = ResnetConvBlock(
+            128, 256, use_batchnorm=use_batchnorm, initial=True
+        )
+        self.resnetBlock256_2 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
+        self.resnetBlock256_3 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
+        self.resnetBlock256_4 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
+        self.resnetBlock256_5 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
+        self.resnetBlock256_6 = ResnetConvBlock(256, 256, use_batchnorm=use_batchnorm)
+
+        self.resnetBlock512_1 = ResnetConvBlock(
+            256, 512, use_batchnorm=use_batchnorm, initial=True
+        )
+        self.resnetBlock512_2 = ResnetConvBlock(512, 512, use_batchnorm=use_batchnorm)
+        self.resnetBlock512_3 = ResnetConvBlock(512, 512, use_batchnorm=use_batchnorm)
+
+        self.avgPool = nn.AdaptiveAvgPool2d(1)
+        self.head = nn.Linear(512, num_classes)
+
+    def forward(self, x):
+        x = self.inputConv(x)
+        x = self.pool1(x)
+
+        x = self.resnetBlock64_1(x)
+        x = self.resnetBlock64_2(x)
+        x = self.resnetBlock64_3(x)
+
+        x = self.resnetBlock128_1(x)
+        x = self.resnetBlock128_2(x)
+        x = self.resnetBlock128_3(x)
+        x = self.resnetBlock128_4(x)
+
+        x = self.resnetBlock256_1(x)
+        x = self.resnetBlock256_2(x)
+        x = self.resnetBlock256_3(x)
+        x = self.resnetBlock256_4(x)
+        x = self.resnetBlock256_5(x)
+        x = self.resnetBlock256_6(x)
+
+        x = self.resnetBlock512_1(x)
+        x = self.resnetBlock512_2(x)
+        x = self.resnetBlock512_3(x)
+
+        x = self.avgPool(x)
+        x = torch.flatten(x, 1)
+
+        return self.head(x)
+
 
 class LitCNNMultiLabel(pl.LightningModule):
-    """`pos_weight`: tensor from `KaggleDataModule.pos_weight`; None means plain BCE.
-    New model: `build`; trained one: `load` (`load_from_checkpoint` needs same `model_class` and `pos_weight` passed again)."""
+    """`net`: CNN with one logit per class. Adam (`lr`), `CosineAnnealingLR` to `eta_min` stepped per batch, BCE with
+    `pos_weight` of datamodule training rows and sampler, ratio to `pos_weight_power` (set at fit start, saved in checkpoint).
+    Steps return `loss`, `probs`, `labels`: metrics in callbacks (`core.training.train.MeanAP`). Trained one: `load`."""
 
-    def __init__(self, model_class=timm.create_model, model_kwargs=None, initial_lr=1e-3, final_lr=1e-5,
-                 pos_weight=None):
+    def __init__(
+        self,
+        net: nn.Module,
+        lr: float = 1e-3,
+        eta_min: float = 1e-5,
+        pos_weight_power: float = 1.0,
+    ):
         super().__init__()
-        self.save_hyperparameters(ignore=["model_class", "pos_weight"])  # callable unpicklable under weights_only; pass at load
-        self.model = model_class(**(model_kwargs or {}))
-        self.register_buffer("pos_weight", pos_weight)  # buffer: moves to device, saved in checkpoint
-        self.train_map = self._mean_ap()
-        self.val_map = self._mean_ap()
-
-    @staticmethod
-    def _mean_ap():
-        return torchmetrics.classification.MultilabelAveragePrecision(num_labels=len(CLASSES), average="macro")
-
-    @staticmethod
-    def _backbone(timm_model, torchvision_model):
-        """(model_class, model_kwargs) of exactly one of `timm_model` (pretrained) or `torchvision_model` (`TORCHVISION_MODELS` key)."""
-        if timm_model is not None:
-            return timm.create_model, {"model_name": timm_model, "pretrained": True, "num_classes": len(CLASSES)}
-        return TORCHVISION_MODELS[torchvision_model], {"num_classes": len(CLASSES)}
+        self.save_hyperparameters()  # under LightningCLI: YAML block of `net`, so checkpoint rebuilds it
+        self.model = net
+        self.loss = nn.BCEWithLogitsLoss(pos_weight=torch.ones(len(CLASSES)))
 
     @classmethod
-    def build(cls, timm_model=None, torchvision_model=None, initial_lr=1e-3, final_lr=1e-5, pos_weight=None):
-        """New model on backbone `timm_model` or `torchvision_model`."""
-        model_class, model_kwargs = cls._backbone(timm_model, torchvision_model)
-        return cls(
-            model_class=model_class, model_kwargs=model_kwargs, initial_lr=initial_lr, final_lr=final_lr, pos_weight=pos_weight
+    def load(cls, ckpt, map_location=None):
+        """Trained model of checkpoint `ckpt`. Checkpoints before LightningCLI: network from their `model` block
+        (`_target_` plus kwargs), weights from state dict."""
+        checkpoint = torch.load(ckpt, map_location="cpu", weights_only=False)
+
+        if "model" not in checkpoint["hyper_parameters"]:
+            return cls.load_from_checkpoint(ckpt, map_location=map_location)
+
+        block = dict(checkpoint["hyper_parameters"]["model"])
+        module, _, name = block.pop("_target_").rpartition(".")
+        module = (
+            "core.training.model" if module.startswith("core.") else module
+        )  # project nets moved here since
+        net = getattr(importlib.import_module(module), name)(
+            **block, num_classes=len(CLASSES)
+        )
+        model = cls(net)
+        model.load_state_dict(checkpoint["state_dict"])
+
+        return model.to(map_location) if map_location else model
+
+    def pos_weight(self, dm):
+        """BCE `pos_weight` of training rows of datamodule `dm`: ((N - n_c) / n_c) ** `pos_weight_power`, N and n_c
+        counted over sampler draws."""
+        train = dm.df[dm.df["fold"] != dm.fold]
+        counts = sample_weights(train, dm.oversample, dm.downsample)
+        n_pos = counts @ train[CLASSES].to_numpy()
+
+        return torch.tensor(
+            ((counts.sum() - n_pos) / n_pos) ** self.hparams.pos_weight_power,
+            dtype=torch.float32,
         )
 
-    @classmethod
-    def load(cls, ckpt, timm_model=None, torchvision_model=None, map_location=None):
-        """Trained model from checkpoint `ckpt`; backbone args as at `build`.
-        `pos_weight` buffer restored from checkpoint; passed only for its shape."""
-        model_class, model_kwargs = cls._backbone(timm_model, torchvision_model)
-        return cls.load_from_checkpoint(
-            ckpt, map_location=map_location, model_class=model_class, model_kwargs=model_kwargs,
-            pos_weight=torch.ones(len(CLASSES)),
-        )
+    def setup(self, stage):
+        if stage == "fit":
+            self.loss.pos_weight.copy_(self.pos_weight(self.trainer.datamodule))
 
-    @torch.no_grad()
     def predict_probs(self, loader):
-        """Sigmoid probabilities and labels of every row of `loader`, as numpy arrays."""
-        self.eval()
-        probs, targets = [], []
-        for x, y in tqdm(loader, desc="predict"):
-            probs.append(torch.sigmoid(self(x.to(self.device)).float()).cpu())
-            targets.append(y)
+        """Sigmoid probabilities and labels of every row of `loader`, as numpy arrays (`trainer.predict`)."""
+        logger = logging.getLogger("lightning.pytorch")
+        level = logger.level
+        logger.setLevel(logging.WARNING)  # no device info lines per call
+
+        try:
+            trainer = pl.Trainer(
+                devices=1,
+                logger=False,
+                enable_checkpointing=False,
+                enable_model_summary=False,
+            )
+            batches = trainer.predict(self, loader)
+        finally:
+            logger.setLevel(level)
+
+        probs, targets = zip(*batches)
+
         return torch.cat(probs).numpy(), torch.cat(targets).numpy()
+
+    def predict_step(self, batch, batch_idx):
+        x, y = batch
+
+        return torch.sigmoid(self(x).float()).cpu(), y.cpu()
 
     def forward(self, x):
         return self.model(x)
 
-    def _step(self, batch, metric):
+    def _step(self, batch):
         x, y = batch
         logits = self(x)
-        metric.update(torch.sigmoid(logits.float()), y.int())
-        # one independent sigmoid per class
-        return nn.functional.binary_cross_entropy_with_logits(logits, y, pos_weight=self.pos_weight)
+
+        return {
+            "loss": self.loss(logits, y),
+            "probs": torch.sigmoid(logits.float()).detach(),
+            "labels": y,
+        }
 
     def training_step(self, batch, batch_idx):
-        loss = self._step(batch, self.train_map)
-        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
-        return loss
+        out = self._step(batch)
+        self.log("train_loss", out["loss"], on_step=True, on_epoch=True, prog_bar=True)
 
-    def on_train_epoch_end(self):
-        self.log("train_map", self.train_map.compute(), prog_bar=True)
-        self.train_map.reset()
+        return out
 
     def validation_step(self, batch, batch_idx):
-        loss = self._step(batch, self.val_map)
-        self.log("val_loss", loss, on_epoch=True, prog_bar=True)
+        out = self._step(batch)
+        self.log("val_loss", out["loss"], on_epoch=True, prog_bar=True)
 
-    def on_validation_epoch_end(self):
-        self.log("val_map", self.val_map.compute(), prog_bar=True)
-        self.val_map.reset()
+        return out
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.hparams.initial_lr)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.hparams.lr)
         scheduler = {
             "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR(
-                optimizer, T_max=self.trainer.estimated_stepping_batches, eta_min=self.hparams.final_lr
+                optimizer,
+                T_max=self.trainer.estimated_stepping_batches,
+                eta_min=self.hparams.eta_min,
             ),
             "interval": "step",
         }
+
         return [optimizer], [scheduler]

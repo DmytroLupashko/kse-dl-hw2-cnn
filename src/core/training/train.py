@@ -1,31 +1,98 @@
-"""One training run (`TrainingRun`), logged to MLflow, best checkpoint by `val_map`; finished runs reused."""
-import hashlib
-import json
-import logging
-import shutil
+"""Trainer callbacks of `core.training.cli`: mAP (`MeanAP`), run folder outputs (`RunCheckpoint`), progress bars."""
+
 import sys
 from pathlib import Path
 
-import lightning.pytorch as pl
-import pandas as pd
-import torch
-from lightning.pytorch.callbacks import (
-    LearningRateMonitor,
-    ModelCheckpoint,
-    TQDMProgressBar,
-)
+from lightning.pytorch.callbacks import Callback, ModelCheckpoint, TQDMProgressBar
 from lightning.pytorch.callbacks.progress.tqdm_progress import Tqdm
+from torchmetrics.classification import MultilabelAveragePrecision
 
-from .config import CHECKPOINTS, SEED
-from .tracking import Experiment
+from ..analysis.metrics import ap
+from .config import CLASSES
+from .model import LitCNNMultiLabel
+from .runs import PROB_COLS, save_run
+
+
+class MeanAP(Callback):
+    """Macro AP per epoch of `probs`, `labels` returned by model steps: `train_map`, `val_map` (`RunCheckpoint` monitor)."""
+
+    def on_fit_start(self, trainer, pl_module):
+        self.metrics = {
+            split: MultilabelAveragePrecision(
+                num_labels=len(CLASSES), average="macro"
+            ).to(pl_module.device)
+            for split in ("train", "val")
+        }
+
+    def _update(self, split, outputs):
+        self.metrics[split].update(outputs["probs"], outputs["labels"].int())
+
+    def _log(self, split, pl_module):
+        pl_module.log(f"{split}_map", self.metrics[split].compute(), prog_bar=True)
+        self.metrics[split].reset()
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        self._update("train", outputs)
+
+    def on_train_epoch_end(self, trainer, pl_module):
+        self._log("train", pl_module)
+
+    def on_validation_batch_end(
+        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
+    ):
+        self._update("val", outputs)
+
+    def on_validation_epoch_end(self, trainer, pl_module):
+        self._log("val", pl_module)
+
+
+class RunCheckpoint(ModelCheckpoint):
+    """Run folder `trainer.default_root_dir` (`core.training.runs.run_dir`): best checkpoint by `monitor` (min when name
+    has "loss", else max; no validation fold: latest epoch), then `oof.parquet` (validation rows, probs of best
+    checkpoint; best AP per class logged to MLflow) and `run.json` (MLflow run id)."""
+
+    def __init__(self, monitor="val_map"):
+        mode = "min" if "loss" in monitor else "max"
+        # weights only: loaded for prediction only, optimizer state triples size
+        super().__init__(
+            monitor=monitor,
+            mode=mode,
+            save_top_k=1,
+            save_weights_only=True,
+            filename="{epoch:02d}",
+        )
+
+    def setup(self, trainer, pl_module, stage):
+        self.dirpath = trainer.default_root_dir
+
+        if trainer.datamodule.fold is None:
+            self.monitor = None
+
+        super().setup(trainer, pl_module, stage)
+
+    def on_fit_end(self, trainer, pl_module):
+        dm, val = trainer.datamodule, None
+
+        if dm.fold is not None:
+            best = LitCNNMultiLabel.load(
+                self.best_model_path, map_location=pl_module.device
+            )
+            probs, y = best.predict_probs(dm.val_dataloader())
+            trainer.logger.log_metrics(
+                {f"best_ap_{c}": v for c, v in ap(y, probs, CLASSES).items()}
+            )
+            val = dm.df.loc[dm.df["fold"] == dm.fold, ["fold", *CLASSES]].copy()
+            val[PROB_COLS] = probs
+
+        save_run(Path(self.dirpath), trainer.logger.run_id, val)
 
 
 class EpochBars(TQDMProgressBar):
     """One tqdm bar per epoch, kept on screen; no validation or sanity check bar.
-    Bar closed at next epoch start: `train_map` logged after epoch-end callbacks. Then line per checkpoint save."""
+    Bar closed at next epoch start: `train_map` logged in epoch-end hook of `MeanAP`, maybe after this one. Then line per checkpoint save."""
 
     def __init__(self):
-        super().__init__(leave=True)
+        super().__init__(leave=True, refresh_rate=1)
         self._open = False
         self._best = ""
 
@@ -55,6 +122,7 @@ class EpochBars(TQDMProgressBar):
     def get_metrics(self, trainer, pl_module):
         metrics = super().get_metrics(trainer, pl_module)
         metrics.pop("v_num", None)
+
         return metrics
 
     def on_train_epoch_end(self, *_):
@@ -66,88 +134,12 @@ class EpochBars(TQDMProgressBar):
     def _finish_epoch(self, trainer, pl_module):
         if not self._open:
             return
+
         self._open = False
         self.train_progress_bar.set_postfix(self.get_metrics(trainer, pl_module))
         self.train_progress_bar.close()
         best = trainer.checkpoint_callback.best_model_path
+
         if best != self._best:
             self._best = best
             print(f"    checkpoint saved: {Path(best).name}", flush=True)
-
-
-class TrainingRun:
-    """Run `name` of MLflow experiment `experiment` (`cnn-<section>-<slug>`): checkpoint folder, fit, reuse.
-    Folder holds best checkpoint (by `val_map`) plus `run.json` once finished."""
-
-    def __init__(self, experiment, name):
-        self.experiment = experiment
-        self.name = name
-        self.dir = CHECKPOINTS / experiment / name
-
-    @staticmethod
-    def recipe(lit_model, datamodule, epochs, trainer_kw):
-        """Short hash of everything that sets trained weights.
-        Not covered: code changes not visible in these values, e.g. loss in `LitCNNMultiLabel`."""
-        dm = datamodule
-        pos_weight = lit_model.pos_weight
-        recipe = {
-            "model": [type(lit_model).__qualname__, type(lit_model.model).__qualname__],
-            "hparams": dict(lit_model.hparams),
-            "pos_weight": None if pos_weight is None else pos_weight.tolist(),
-            "data": int(pd.util.hash_pandas_object(dm.df, index=False).sum()),
-            "fold": dm.fold,
-            "batch_size": dm.batch_size,
-            "tfms": [dm.train_tfms.to_dict(), dm.val_tfms.to_dict()],
-            "epochs": epochs,
-            "trainer_kw": trainer_kw,
-            "seed": SEED,
-        }
-        if dm.oversample != 1:  # key absent for plain shuffling: hashes of earlier runs unchanged
-            recipe["oversample"] = dm.oversample
-        if dm.downsample != 1:
-            recipe["downsample"] = dm.downsample
-        if dm.is_new:
-            recipe["datamodule"] = type(dm).__qualname__
-        return hashlib.sha256(json.dumps(recipe, sort_keys=True, default=str).encode()).hexdigest()[:12]
-
-    def best_checkpoint(self):
-        """Path of best checkpoint of finished run."""
-        return next(self.dir.glob("*.ckpt"))
-
-    def fit(self, lit_model, datamodule, epochs, reuse=True, **trainer_kw):
-        """Fits `lit_model`, returns MLflow run id. `reuse`: finished earlier run with same `recipe` returned without
-        training; changed recipe retrains and replaces it."""
-        done = self.dir / "run.json"  # written only after fit finishes, so interrupted runs retrain
-        recipe = self.recipe(lit_model, datamodule, epochs, trainer_kw)
-        if reuse and done.exists():
-            run = json.loads(done.read_text())
-            if run["recipe"] == recipe:
-                print(f"\n=== {self.name} | {self.experiment} | reused finished run ===\n    checkpoint: {self.best_checkpoint().name}")
-                return run["run_id"]
-        shutil.rmtree(self.dir, ignore_errors=True)  # interrupted or replaced run
-        print(f"\n=== {self.name} | {self.experiment} | {epochs} epochs ===", flush=True)
-        logging.getLogger("lightning.pytorch").setLevel(logging.WARNING)  # no device, tip, stop info lines
-        pl.seed_everything(SEED, verbose=False)
-        logger = Experiment(self.experiment).fold_logger(self.name)
-        logger.log_hyperparams({"recipe": recipe})
-        has_val = datamodule.fold is not None
-        checkpoint_cb = ModelCheckpoint(
-            dirpath=self.dir,
-            monitor="val_map" if has_val else None,
-            mode="max",
-            save_top_k=1,
-            save_weights_only=True,  # only loaded for prediction; optimizer state triples size
-            filename="{epoch:02d}-{val_map:.4f}" if has_val else "{epoch:02d}",
-        )
-        trainer = pl.Trainer(
-            max_epochs=epochs,
-            logger=logger,
-            callbacks=[checkpoint_cb, LearningRateMonitor(logging_interval="step"), EpochBars()],
-            enable_model_summary=False,
-            accelerator="auto",
-            precision="16-mixed" if torch.cuda.is_available() else "32-true",
-            **trainer_kw,
-        )
-        trainer.fit(lit_model, datamodule=datamodule)
-        done.write_text(json.dumps({"run_id": logger.run_id, "recipe": recipe}))
-        return logger.run_id

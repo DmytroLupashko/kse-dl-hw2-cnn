@@ -1,8 +1,15 @@
-name = "ResNet-18"
-timm_model = "resnet18.a1_in1k"
-experiment = "cnn-model-lecture-models"
-folds = [0, 1]  # Fast validation mode
-epochs = 10
-img_size = 224
-batch_size = 64
-num_workers = 4
+name: "ResNet-18"
+experiment: "cnn-model-lecture-models"
+data:
+  img_size: 224
+  batch_size: 64
+  num_workers: 4
+model:
+  pos_weight_power: 0.75  # damped ratio without oversampling
+  net:
+    class_path: core.training.model.timm_net
+    init_args:
+      model_name: "resnet18.a1_in1k"
+      pretrained: true
+trainer:
+  max_epochs: 10

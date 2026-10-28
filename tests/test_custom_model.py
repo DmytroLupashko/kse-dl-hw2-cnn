@@ -1,26 +1,26 @@
-"""`ResnetFromPaper` vs torchvision `resnet34`. Run: `python -m unittest core.test_custom_model`."""
+"""`ResnetFromPaper` vs torchvision `resnet34`. Run: `python -m unittest discover -s tests`."""
 
 import unittest
 
 import torch
 import torchvision
 
-from core.model import ResnetFromPaper
+from core.training.model import ResnetFromPaper
 
 NUM_CLASSES = 5
-STAGES = {  # block name: output shape for 224x224 input
+STAGES = {  # module path: output shape for 224x224 input
     "pool1": (64, 56, 56),
-    "resnetBlock64_3": (64, 56, 56),
-    "resnetBlock128_4": (128, 28, 28),
-    "resnetBlock256_6": (256, 14, 14),
-    "resnetBlock512_3": (512, 7, 7),
+    "stages.0": (64, 56, 56),
+    "stages.1": (128, 28, 28),
+    "stages.2": (256, 14, 14),
+    "stages.3": (512, 7, 7),
 }
 
 
 class TestResnetFromPaper(unittest.TestCase):
     def setUp(self):
         torch.manual_seed(0)
-        self.ours = ResnetFromPaper(NUM_CLASSES, use_batchnorm=True).eval()
+        self.ours = ResnetFromPaper(NUM_CLASSES).eval()
         self.torchvision = torchvision.models.resnet34(num_classes=NUM_CLASSES).eval()
         self.x = torch.randn(2, 3, 224, 224)
 
@@ -47,10 +47,12 @@ class TestResnetFromPaper(unittest.TestCase):
         targets = [t for k, t in ours_state.items() if not self._is_conv_bias(k)]
         sources = list(self.torchvision.state_dict().values())
         self.assertEqual(len(targets), len(sources))
+
         with torch.no_grad():
             for k, t in ours_state.items():
                 if self._is_conv_bias(k):
                     t.zero_()
+
             for source, target in zip(sources, targets):
                 self.assertEqual(source.shape, target.shape)
                 target.copy_(source)
@@ -60,10 +62,12 @@ class TestResnetFromPaper(unittest.TestCase):
 
     def test_stage_shapes(self):
         shapes = {}
+
         for name in STAGES:
-            getattr(self.ours, name).register_forward_hook(
+            self.ours.get_submodule(name).register_forward_hook(
                 lambda module, inputs, output, name=name: shapes.__setitem__(name, tuple(output.shape[1:]))
             )
+
         self.ours(self.x)
         self.assertEqual(shapes, STAGES)
 
@@ -79,6 +83,7 @@ class TestResnetFromPaper(unittest.TestCase):
     def test_same_output_as_torchvision(self):
         self._randomize_batchnorm(self.torchvision)
         self._copy_torchvision_weights()
+
         with torch.no_grad():
             torch.testing.assert_close(self.ours(self.x), self.torchvision(self.x), rtol=1e-4, atol=1e-4)
 

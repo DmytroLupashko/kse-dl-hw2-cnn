@@ -1,30 +1,9 @@
 """Image transforms: training recipes, validation, per-row extras.
 
-`recipes`: `Recipe` class tree, `RECIPES` registry (`Config.augment` key), pseudo-box files.
-`ops`: project albumentations transforms (box erase, background paste, non-VIP variants).
-`rows`: `RowTransform` feeds each image its extras (`vip` flag, pseudo-boxes, backgrounds); dataset only loads images.
+`recipes`: `Recipe` class tree (YAML `data.augment` `class_path`).
+`ops`: project albumentations transforms (non-VIP variants).
+`rows`: `RowTransform` feeds each image its extras (`vip` flag, Compose `row_extras`); dataset only loads images.
+Box recipes and transforms: `core.boxes`.
 """
-from .recipes import (
-    BOXES,
-    FACE_BOXES,
-    HEAD_BOXES,
-    RECIPES,
-    AttentionDrop,
-    BoxCrop,
-    CoarseDropoutNonVip,
-    Default,
-    FaceErase,
-    GrayNonVip,
-    GridDropout,
-    HeadErase,
-    Jpeg,
-    JpegNonVip,
-    Lecture,
-    Paste,
-    Recipe,
-    V2,
-    V3,
-    V3NoCrop,
-    Validation,
-)
-from .rows import RowTransform, read_boxes
+from .recipes import V2, Default, Validation
+from .rows import RowTransform
