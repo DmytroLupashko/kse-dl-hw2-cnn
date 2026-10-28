@@ -20,7 +20,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp18_grid_dropout.ipynb](../../notebooks/experiments/exp18_grid_dropout.ipynb), config `configs/models/exp18_grid_dropout/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp18_grid_dropout.ipynb](../../../notebooks/experiments/exp18_grid_dropout.ipynb), config `configs/exp18_grid_dropout/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-grid-dropout`
 - **What changes:** `augment = "grid_dropout"`, all images, every step per draw in order (default recipe in brackets):
   1. `Resize` 224 (same)
@@ -35,29 +35,29 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Moris views](../figures/exp18_grid_dropout_views_moris.png)
+![Moris views](../../figures/exp18_grid_dropout_views_moris.png)
 
-![Motya views](../figures/exp18_grid_dropout_views_motya.png)
+![Motya views](../../figures/exp18_grid_dropout_views_motya.png)
 
-![Biatrix views](../figures/exp18_grid_dropout_views_biatrix.png)
+![Biatrix views](../../figures/exp18_grid_dropout_views_biatrix.png)
 
 8 random VIP positives of fold 0 train part, every draw of one epoch: every draw shifted, rotated or zoomed; about 1 in 3 with small colored squares; zoom-out with reflect border sometimes mirrors part of animal (two Motyas in one draw).
 
-![Precision-recall curves](../figures/exp18_grid_dropout_pr_curves.png)
+![Precision-recall curves](../../figures/exp18_grid_dropout_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows), exp16 to grid dropout: Moris 0.947 to 0.953, Motya 0.927 to 0.793, Biatrix 0.988 to 0.993, Cat, Dog unchanged (0.999, 0.997). Per fold, grid dropout minus exp16: Moris −0.005 / −0.005, Motya −0.132 / −0.135, Biatrix +0.014 / −0.014, mAP −0.024 / −0.031.
 
-![Moris validation](../figures/exp18_grid_dropout_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp18_grid_dropout_grad_cam_moris_validation.png)
 
-![Moris train](../figures/exp18_grid_dropout_grad_cam_moris_train.png)
+![Moris train](../../figures/exp18_grid_dropout_grad_cam_moris_train.png)
 
-![Motya validation](../figures/exp18_grid_dropout_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp18_grid_dropout_grad_cam_motya_validation.png)
 
-![Motya train](../figures/exp18_grid_dropout_grad_cam_motya_train.png)
+![Motya train](../../figures/exp18_grid_dropout_grad_cam_motya_train.png)
 
-![Biatrix validation](../figures/exp18_grid_dropout_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp18_grid_dropout_grad_cam_biatrix_validation.png)
 
-![Biatrix train](../figures/exp18_grid_dropout_grad_cam_biatrix_train.png)
+![Biatrix train](../../figures/exp18_grid_dropout_grad_cam_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix), sorted by out-of-fold prob; caption: fold model, its prob, green at or above best-F1 threshold (Moris 0.928, Motya 0.922, Biatrix 0.990), red below. Validation misses: Moris 3, Motya 5, Biatrix 1 (exp16: 4, 2, 0); train: none, every p ≥ 0.999.
 
