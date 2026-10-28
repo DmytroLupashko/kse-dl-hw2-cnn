@@ -1,0 +1,7 @@
+# exp43 ConvNeXt-Tiny on every training row, one task on Kaggle T4
+defaults: {run: fit}
+code: [src/core, configs]
+pythonpath: [src]
+data: ["competition:cats-and-dogs"]
+vars:
+  config: configs/models/exp43_convnext_tiny_full/convnext_tiny.yaml

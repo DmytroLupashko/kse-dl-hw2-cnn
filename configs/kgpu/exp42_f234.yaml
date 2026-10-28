@@ -1,0 +1,9 @@
+# exp42 folds 2-4 on Kaggle T4 x2 (`device` default); folds 0-1 trained locally
+defaults: {run: cv}
+code: [src/core, configs]  # unpacked into kernel working dir, relative paths kept
+pythonpath: [src]  # `import core` in kernel and its fold processes
+data: ["competition:cats-and-dogs"]
+vars:
+  config: configs/models/exp42_oversample_8_only/resnet18.yaml
+tasks:
+  items: [2, 3, 4]
