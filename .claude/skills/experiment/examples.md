@@ -43,7 +43,7 @@ Notebook link only. No configs, no training module.
 Bad:
 
 ```md
-- **Notebook:** [exp01_lecture_models.ipynb](../notebooks/experiments/exp01_lecture_models.ipynb), configs `configs/models/exp01_lecture_models/`, training `core.training.cv`
+- **Notebook:** [exp01_lecture_models.ipynb](../notebooks/experiments/exp01_lecture_models.ipynb), configs `configs/exp01_lecture_models/`, training `training.cv`
 ```
 
 Good:
@@ -89,12 +89,12 @@ Good:
 
 ## What stays fixed
 
-One item per line. Defaults from `docs/methods/configuration.md`: link, not restated. No code paths.
+One item per line. Defaults from `docs/neuroslope/methods/configuration.md`: link, not restated. No code paths.
 
 Bad:
 
 ```md
-- **What stays fixed:** lecture recipe: Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `core.data.dataset.train_tfms`, mean = std = 0.5; config from `docs/methods/configuration.md`: `BCEWithLogitsLoss` with `pos_weight` $w_c = ((N - n_c)/n_c)^{3/4}$ computed on train part of fold, best checkpoint by `val_map` (added to `core.training.model`, `core.training.train`), folds from `core.data.dataset.read_train`, each fold model trains on other 4 folds (80%), `SEED`
+- **What stays fixed:** lecture recipe: Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `dataset.dataset.train_tfms`, mean = std = 0.5; config from `docs/neuroslope/methods/configuration.md`: `BCEWithLogitsLoss` with `pos_weight` $w_c = ((N - n_c)/n_c)^{3/4}$ computed on train part of fold, best checkpoint by `val_map` (added to `training.model`, `training.train`), folds from `dataset.dataset.read_train`, each fold model trains on other 4 folds (80%), `SEED`
 ```
 
 Good:
@@ -102,7 +102,7 @@ Good:
 ```md
 - **What stays fixed:**
   - lecture recipe: Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px
-  - loss, checkpoint, folds: `docs/methods/configuration.md`
+  - loss, checkpoint, folds: `docs/neuroslope/methods/configuration.md`
 ```
 
 ## Metric

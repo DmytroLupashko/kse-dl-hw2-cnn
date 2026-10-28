@@ -24,7 +24,7 @@ Here, for example, you should not mention that model is trained on folds 0 and f
 Also "one notebook cell per model" is redundant, as it is more like general policy then part of plan.
 
 ```md
-- **Notebook:** [exp01_lecture_models.ipynb](../notebooks/experiments/exp01_lecture_models.ipynb), configs `configs/models/exp01_lecture_models/`, training `core.training.cv`
+- **Notebook:** [exp01_lecture_models.ipynb](../notebooks/experiments/exp01_lecture_models.ipynb), configs `configs/exp01_lecture_models/`, training `training.cv`
 ```
 
 why configs included here, there should be only notebook.
@@ -42,7 +42,7 @@ I think val mode should be defined as separate parameter; there should be just `
 WHAT A FUCK IS THAT? How I supposed to read this shit?
 
 ```md
-- **What stays fixed:** lecture recipe: Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `core.data.dataset.train_tfms`, mean = std = 0.5; config from `docs/methods/configuration.md`: `BCEWithLogitsLoss` with `pos_weight` $w_c = ((N - n_c)/n_c)^{3/4}$ computed on train part of fold, best checkpoint by `val_map` (added to `core.training.model`, `core.training.train`), folds from `core.data.dataset.read_train`, each fold model trains on other 4 folds (80%), `SEED`
+- **What stays fixed:** lecture recipe: Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, `dataset.dataset.train_tfms`, mean = std = 0.5; config from `docs/neuroslope/methods/configuration.md`: `BCEWithLogitsLoss` with `pos_weight` $w_c = ((N - n_c)/n_c)^{3/4}$ computed on train part of fold, best checkpoint by `val_map` (added to `training.model`, `training.train`), folds from `dataset.dataset.read_train`, each fold model trains on other 4 folds (80%), `SEED`
 ```
 
 At least, this should be separated by lines.

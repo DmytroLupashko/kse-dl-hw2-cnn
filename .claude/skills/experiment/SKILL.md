@@ -24,7 +24,7 @@ Mode from `$ARGUMENTS`: first word `build` or `report`, otherwise a new request.
   3. Training experiments: one YAML config per model (path and training entry point from CLAUDE.md); notebook holds no training loop.
   4. Notebook holds no smoke code: no `SMOKE` flag, no smoke branches or overrides; constants hold full-scale values only. Project code handles `SMOKE=1` (shrunk training, `-smoke` tracking and results, no saved figures, no upload); see CLAUDE.md. Shared helpers (style, plots, scores) come from project code, never copied into notebook. Tracking experiment: `<prefix>-expNN-<slug>` (prefix from CLAUDE.md).
   5. Verify with `SMOKE=1 <jupyter> nbconvert --execute --to notebook --stdout <nb> > /dev/null` (`<jupyter>` from CLAUDE.md). Fix until it passes. Never run at full scale and never write outputs to the notebook.
-  6. After it passes, delete smoke leftovers: smoke tracking experiment permanently (MLflow: `delete_experiment`, then `mlflow gc --tracking-uri <uri> --experiment-ids <id>`, otherwise the name stays taken and next smoke run fails) its checkpoint folder `checkpoints/<tracking experiment>-smoke/` and results folder `data/processed/cv/<tracking experiment>-smoke/`.
+  6. After it passes, delete smoke leftovers: smoke tracking experiment permanently (MLflow: `delete_experiment`, then `mlflow gc --tracking-uri <uri> --experiment-ids <id>`, otherwise the name stays taken and next smoke run fails) its results folder `data/processed/cv/<tracking experiment>-smoke/`.
 
 
 ## Report [NN]
