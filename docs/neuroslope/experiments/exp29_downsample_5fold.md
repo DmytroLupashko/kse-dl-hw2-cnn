@@ -16,7 +16,7 @@ Does exp16 setup (downsampling, no coarse dropout) on 5 folds reach Kaggle publi
 
 ## Setup
 
-- **Notebook:** [exp29_downsample_5fold.ipynb](../../notebooks/submissions/exp29_downsample_5fold.ipynb), config `configs/models/exp29_downsample_5fold/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp29_downsample_5fold.ipynb](../../../notebooks/submissions/exp29_downsample_5fold.ipynb), config `configs/exp29_downsample_5fold/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-downsample-5fold`
 - **What changes:** exp16 setup on `folds = [0, 1, 2, 3, 4]`; vs exp26: no holes (`augment` default); vs exp11: `downsample = 0.2`, `pos_weight` counted over draws (VIP 29% of draws instead of 8%).
 - **What stays fixed:** exp11 submission recipe: 5 fold models averaged, per-class best-F1 thresholds on pooled OOF rows; `oversample = 8`, 10 epochs, 224 px.
