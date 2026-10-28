@@ -10,7 +10,7 @@ Now state contains all experiments and generic code that tries to satisfy all of
 
 What's new approach?
 
-Each experiment / bunch of related experiments are contained in their special branch, which after finishing merges into archive branch which contains history of experimetns.****
+Each experiment / bunch of related experiments are contained in their special branch.
 If experiment is successful and beats baseline, then it moves to main.
 The only thing that always is kept across experiments – mflow db, i.e. tracking results. I do not need to repredict everything, it is shitty job
 Sometimes I will want to understand what experiments I did and what are their results. For this part I will used condensed notebooks which I will write myself.
@@ -25,6 +25,6 @@ Sometimes I will want to understand what experiments I did and what are their re
 
 Goal: separate experiments from each other.
 
-Experiment branches "communicate" with each other threw main (rebasing) and archive (cherrypicking some figures if needed).
+Experiment branches "communicate" with each other threw main (rebasing) and cherry picking.
 
 Each experiment does not contain artifacts of previous experiments, if not needed.
