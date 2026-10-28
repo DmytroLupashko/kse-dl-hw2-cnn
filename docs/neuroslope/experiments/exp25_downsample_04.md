@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp25_downsample_04.ipynb](../../notebooks/experiments/exp25_downsample_04.ipynb), config `configs/models/exp25_downsample_04/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp25_downsample_04.ipynb](../../../notebooks/experiments/exp25_downsample_04.ipynb), config `configs/exp25_downsample_04/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-downsample-04`
 - **What changes:** `downsample = 0.4`: non-VIP rows random 40% per epoch instead of 20%. Generic share of Cat draws 58% to 74%, of Dog draws 75% to 86%; epoch about 1.7× longer.
 - **What stays fixed:** exp20 setup: `augment = "coarse_dropout_non_vip"` (colored holes on non-VIP rows), `oversample = 8`, full ratio `pos_weight` counted over draws; 10 epochs, folds 0 and 1; exp20 results reused.
@@ -28,27 +28,27 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Cat, exp20 vs downsample 0.4](../figures/exp25_downsample_04_grad_cam_cat_compare.png)
+![Cat, exp20 vs downsample 0.4](../../figures/exp25_downsample_04_grad_cam_cat_compare.png)
 
-![Dog, exp20 vs downsample 0.4](../figures/exp25_downsample_04_grad_cam_dog_compare.png)
+![Dog, exp20 vs downsample 0.4](../../figures/exp25_downsample_04_grad_cam_dog_compare.png)
 
 exp19 images, 16 per class, out-of-fold rows of folds 0 and 1; caption: model, its prob, green at or above own best-F1 threshold (downsample 0.4: Cat 0.675, Dog 0.526), red below. Maps almost identical to exp20. Heat on body, by eye: Cat about 3 to 4 of 16 (caged tabby: heat moves down onto chest, p 0.997 to 0.736); white cat close-up heat spreads from mouth over eyes and nose, p 0.584 to 0.954; leopard-print chair kitten still missed (p 0.043 to 0.319). Dog about 5 of 16 both; chihuahua heat moves to legs, now missed (p 0.678 to 0.093); Boston terrier chest, p 0.540 to 0.825.
 
-![Moris validation](../figures/exp25_downsample_04_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp25_downsample_04_grad_cam_moris_validation.png)
 
-![Moris train](../figures/exp25_downsample_04_grad_cam_moris_train.png)
+![Moris train](../../figures/exp25_downsample_04_grad_cam_moris_train.png)
 
-![Motya validation](../figures/exp25_downsample_04_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp25_downsample_04_grad_cam_motya_validation.png)
 
-![Motya train](../figures/exp25_downsample_04_grad_cam_motya_train.png)
+![Motya train](../../figures/exp25_downsample_04_grad_cam_motya_train.png)
 
-![Biatrix validation](../figures/exp25_downsample_04_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp25_downsample_04_grad_cam_biatrix_validation.png)
 
-![Biatrix train](../figures/exp25_downsample_04_grad_cam_biatrix_train.png)
+![Biatrix train](../../figures/exp25_downsample_04_grad_cam_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix); green at or above best-F1 threshold (Moris 0.755, Motya 0.778, Biatrix 0.944). Validation misses: Moris 0, Motya 2, Biatrix 2 (exp20: 3, 2, 0).
 
-![Precision-recall curves](../figures/exp25_downsample_04_pr_curves.png)
+![Precision-recall curves](../../figures/exp25_downsample_04_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows), exp20 to downsample 0.4: Moris 0.983 to 0.970, Motya 0.931 to 0.927, Biatrix 1.000 to 0.966, Cat 0.999, Dog 0.998 to 0.997. Per fold, downsample 0.4 minus exp20: Moris +0.008 / −0.034, Motya −0.026 / +0.028, Biatrix −0.014 / −0.069, mAP −0.006 / −0.016.
 
