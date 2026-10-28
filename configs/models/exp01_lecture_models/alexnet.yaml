@@ -1,0 +1,12 @@
+name: "AlexNet"
+experiment: "cnn-model-lecture-models"
+data:
+  img_size: 224
+  batch_size: 64
+  num_workers: 4
+model:
+  pos_weight_power: 0.75  # damped ratio without oversampling
+  net:
+    class_path: core.training.model.alexnet_imagenet
+trainer:
+  max_epochs: 10
