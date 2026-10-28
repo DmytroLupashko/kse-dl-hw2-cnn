@@ -5,7 +5,7 @@ import unittest
 import torch
 import torchvision
 
-from core.training.model import ResnetFromPaper
+from core.training.resnet_paper import ResnetFromPaper
 
 NUM_CLASSES = 5
 STAGES = {  # module path: output shape for 224x224 input
