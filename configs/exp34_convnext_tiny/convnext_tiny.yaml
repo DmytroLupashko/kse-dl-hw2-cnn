@@ -1,0 +1,18 @@
+name: "ConvNeXt-Tiny"
+experiment: "cnn-model-convnext-tiny"
+data:
+  img_size: 224
+  augment:
+    class_path: dataset.augment.CoarseDropoutNonVip  # colored holes on non-VIP rows
+  oversample: 8  # VIP rows 8 times per epoch
+  downsample: 0.2  # non-VIP rows: random 20% per epoch, pos_weight counted over draws
+  batch_size: 64
+  num_workers: 4
+model:
+  net:
+    class_path: training.model.timm_net
+    init_args:
+      model_name: "convnext_tiny.fb_in1k"
+      pretrained: true
+trainer:
+  max_epochs: 10
