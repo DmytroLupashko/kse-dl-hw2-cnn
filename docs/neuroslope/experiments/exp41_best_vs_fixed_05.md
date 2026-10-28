@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp41_best_vs_fixed_05.ipynb](../../notebooks/experiments/exp41_best_vs_fixed_05.ipynb)
+- **Notebook:** [exp41_best_vs_fixed_05.ipynb](../../../notebooks/experiments/exp41_best_vs_fixed_05.ipynb)
 - **Tracking:** none; reads saved results of exp29
 - **What changes:** threshold rule: argmax F1 per class vs 0.5 for every class.
 - **What stays fixed:** out-of-fold probs as saved, folds 0–4, prediction rule prob ≥ threshold.
