@@ -1,0 +1,15 @@
+# final model of model config `vars.config` on every training row, one `core.training.cli` process; pulled back by `core.kaggle.pull`
+setup:
+  mkdir: [mlruns]
+  # mlflow: kernel database readable locally
+  pip: [albumentations==2.0.8, iterative-stratification==0.1.9, mlflow==3.16.1, "jsonargparse[signatures]==4.53.0"]
+  pip_missing: [timm, lightning, torchmetrics]  # Kaggle image torch build kept
+env:
+  DATA_DIR: {find: train.csv}  # competition folder, path differs between images
+  PROGRESS_REFRESH_RATE: "50"  # batches between progress bar updates in kernel log
+tasks:
+  items: [full]
+  command: python -m core.training.cli fit --config {config} --data.fold=null --data.num_workers={workers} --trainer.precision=16-mixed
+  log: logs/full.log
+  env:
+    MLFLOW_TRACKING_URI: "sqlite:///{workdir}/mlruns/full.db"

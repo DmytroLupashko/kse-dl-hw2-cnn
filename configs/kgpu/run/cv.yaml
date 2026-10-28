@@ -1,0 +1,14 @@
+# cross-validation folds of model config `vars.config`, one `core.training.cli` process per fold and GPU; pulled back by `core.kaggle.pull`
+setup:
+  mkdir: [mlruns]
+  # mlflow: kernel database readable locally
+  pip: [albumentations==2.0.8, iterative-stratification==0.1.9, mlflow==3.16.1, "jsonargparse[signatures]==4.53.0"]
+  pip_missing: [timm, lightning, torchmetrics]  # Kaggle image torch build kept
+env:
+  DATA_DIR: {find: train.csv}  # competition folder, path differs between images
+  PROGRESS_REFRESH_RATE: "50"  # batches between progress bar updates in kernel log
+tasks:
+  command: python -m core.training.cli fit --config {config} --data.fold={item} --data.num_workers={workers} --trainer.precision=16-mixed
+  log: logs/fold{item}.log
+  env:
+    MLFLOW_TRACKING_URI: "sqlite:///{workdir}/mlruns/fold{item}.db"  # one writer per sqlite file
