@@ -18,10 +18,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp02_grad_cam.ipynb](../../notebooks/experiments/exp02_grad_cam.ipynb), no training
+- **Notebook:** [exp02_grad_cam.ipynb](../../../notebooks/experiments/exp02_grad_cam.ipynb), no training
 - **Tracking:** `cnn-model-grad-cam` (one run, 6 figures as artifacts)
 - **What changes:** VIP class, prediction outcome (correct or incorrect)
-- **What stays fixed:** model ResNet-18 `resnet18.a1_in1k` from `docs/methods/configuration.md`, checkpoints `checkpoints/cnn-model-lecture-models/ResNet-18 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, `core.data.dataset.val_tfms` at 224 px; Grad-CAM on last block `layer4` (own implementation via forward/backward hooks in `core.training.model`, no new dependency), ReLU of gradient-weighted activations, upsampled to 224 px, overlay on resized image with `jet` colormap at alpha 0.5 (as in Advanced CNN lecture)
+- **What stays fixed:** model ResNet-18 `resnet18.a1_in1k` from `docs/neuroslope/methods/configuration.md`, checkpoints `checkpoints/cnn-model-lecture-models/ResNet-18 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, `dataset.dataset.val_tfms` at 224 px; Grad-CAM on last block `layer4` (own implementation via forward/backward hooks in `training.model`, no new dependency), ReLU of gradient-weighted activations, upsampled to 224 px, overlay on resized image with `jet` colormap at alpha 0.5 (as in Advanced CNN lecture)
 - **Metric:** none, visual; class threshold from best F1 on pooled folds 0 and 1
 
 ## Fixes
@@ -47,17 +47,17 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Moris correct](../figures/exp02_grad_cam_moris_correct.png)
+![Moris correct](../../figures/exp02_grad_cam_moris_correct.png)
 
-![Moris incorrect](../figures/exp02_grad_cam_moris_incorrect.png)
+![Moris incorrect](../../figures/exp02_grad_cam_moris_incorrect.png)
 
-![Motya correct](../figures/exp02_grad_cam_motya_correct.png)
+![Motya correct](../../figures/exp02_grad_cam_motya_correct.png)
 
-![Motya incorrect](../figures/exp02_grad_cam_motya_incorrect.png)
+![Motya incorrect](../../figures/exp02_grad_cam_motya_incorrect.png)
 
-![Biatrix correct](../figures/exp02_grad_cam_biatrix_correct.png)
+![Biatrix correct](../../figures/exp02_grad_cam_biatrix_correct.png)
 
-![Biatrix incorrect](../figures/exp02_grad_cam_biatrix_incorrect.png)
+![Biatrix incorrect](../../figures/exp02_grad_cam_biatrix_incorrect.png)
 
 No metric, visual only. Out-of-fold ResNet-18 predictions on pooled folds 0 and 1, best-F1 thresholds Moris 0.997, Motya 0.974, Biatrix 0.922; Moris has no false positive at its threshold, so its "incorrect" figure holds 2 false negatives only.
 
