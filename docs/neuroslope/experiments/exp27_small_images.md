@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp27_small_images.ipynb](../../notebooks/experiments/exp27_small_images.ipynb), configs `configs/models/exp27_small_images/resnet18_128.yaml`, `resnet18_64.yaml`, training `core.training.cv`
+- **Notebook:** [exp27_small_images.ipynb](../../../notebooks/experiments/exp27_small_images.ipynb), configs `configs/exp27_small_images/resnet18_128.yaml`, `resnet18_64.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-small-images`
 - **What changes:** `img_size = 128` and `img_size = 64` (images 450 x 375 resized square). Grad-CAM map from last ResNet-18 stage: 4 x 4 at 128, 2 x 2 at 64 (7 x 7 at 224).
 - **What stays fixed:** exp20 setup: `augment = "coarse_dropout_non_vip"` (holes relative: 1–4, each 10–25% of side, after resize; same share of image at every size, 6–16 px at 64), `oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`, 10 epochs, batch 64, folds 0 and 1; exp20 results reused.
@@ -27,13 +27,13 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Cat, 224 vs 128 vs 64 px](../figures/exp27_small_images_grad_cam_cat_compare.png)
+![Cat, 224 vs 128 vs 64 px](../../figures/exp27_small_images_grad_cam_cat_compare.png)
 
-![Dog, 224 vs 128 vs 64 px](../figures/exp27_small_images_grad_cam_dog_compare.png)
+![Dog, 224 vs 128 vs 64 px](../../figures/exp27_small_images_grad_cam_dog_compare.png)
 
 exp19 images, 16 per class, out-of-fold rows of folds 0 and 1; caption: size, prob, green at or above own best-F1 threshold, red below. Heat on body, by eye: Cat 224 about 3, 128 about 5 of 16 (black-white cat, black cat, tabby in cage); Dog 224 about 4, 128 about 8 of 16 (weimaraner, black lab, terrier on grass, greyhound, Boston terriers). 128 blobs wider partly by coarse map: 4 x 4 cells, one cell = quarter of side. 64: maps not readable, peak in bottom-right quarter for 13 of 16 Cat and 11 of 16 Dog images, wherever animal is (224: 6 and 2, chance: 4); misses: black lab (p 0.195), white cat (0.401), leopard-print chair kitten (0.411).
 
-![Precision-recall curves](../figures/exp27_small_images_pr_curves.png)
+![Precision-recall curves](../../figures/exp27_small_images_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows), 224 / 128 / 64: Cat 0.999 / 0.995 / 0.941, Dog 0.998 / 0.992 / 0.911, Moris 0.983 / 0.866 / 0.575, Motya 0.931 / 0.742 / 0.545, Biatrix 1.000 / 0.882 / 0.611.
 
@@ -43,7 +43,7 @@ Partly at 128: heat spreads onto body in about twice as many images (Dog 8 vs 4,
 
 ## Conversation
 
-![64 px Dog, Grad-CAM](../figures/exp27_small_images_conversation_dog_64.png)
+![64 px Dog, Grad-CAM](../../figures/exp27_small_images_conversation_dog_64.png)
 
 Why does 64 px model "look" at right side of dog? Map shows ResNet-18 grid, not where model looks.
 
