@@ -20,7 +20,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp26_coarse_dropout_5fold.ipynb](../../notebooks/experiments/exp26_coarse_dropout_5fold.ipynb), config `configs/models/exp26_coarse_dropout_5fold/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp26_coarse_dropout_5fold.ipynb](../../../notebooks/experiments/exp26_coarse_dropout_5fold.ipynb), config `configs/exp26_coarse_dropout_5fold/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-coarse-dropout-5fold`
 - **What changes:** exp20 setup on `folds = [0, 1, 2, 3, 4]` instead of `[0, 1]`; vs exp11: `augment = "coarse_dropout_non_vip"` (colored holes on non-VIP rows), `downsample = 0.2`.
   - Folds 0 and 1 retrained, not reused: new tracking experiment keeps exp20 results (loaded by exp21, exp25) on 2 folds.
@@ -44,15 +44,15 @@ in exp26 add similar TP FP FN table
 
 Out-of-fold rows of folds 0–4 pooled, each model and class at own best-F1 threshold (submission thresholds).
 
-![Precision-recall curves](../figures/exp26_coarse_dropout_5fold_pr_curves.png)
+![Precision-recall curves](../../figures/exp26_coarse_dropout_5fold_pr_curves.png)
 
 exp19 images, 16 per class; caption: model, its prob, green at or above own best-F1 threshold, red below. Cat maps almost identical; leopard-print chair kitten hit by exp11 (p 0.503), missed by new (0.051). Dog: new spreads heat onto body on terrier on grass and fence dog; misses swap: exp11 misses chihuahua (0.452), new misses Boston terrier (0.609 at threshold 0.625).
 
-![Moris validation](../figures/exp26_coarse_dropout_5fold_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp26_coarse_dropout_5fold_grad_cam_moris_validation.png)
 
-![Motya validation](../figures/exp26_coarse_dropout_5fold_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp26_coarse_dropout_5fold_grad_cam_motya_validation.png)
 
-![Biatrix validation](../figures/exp26_coarse_dropout_5fold_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp26_coarse_dropout_5fold_grad_cam_biatrix_validation.png)
 
 All labeled positives per VIP class in folds 0–4 (56 Moris, 42 Motya, 41 Biatrix), fold model that held image out.
 
