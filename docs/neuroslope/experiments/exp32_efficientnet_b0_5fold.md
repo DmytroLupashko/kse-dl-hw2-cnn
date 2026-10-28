@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp32_efficientnet_b0_5fold.ipynb](../../notebooks/experiments/exp32_efficientnet_b0_5fold.ipynb), config `configs/models/exp32_efficientnet_b0_5fold/efficientnet_b0.yaml`, training `core.training.cv`
+- **Notebook:** [exp32_efficientnet_b0_5fold.ipynb](../../../notebooks/experiments/exp32_efficientnet_b0_5fold.ipynb), config `configs/exp32_efficientnet_b0_5fold/efficientnet_b0.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-efficientnet-b0-5fold`
 - **What changes:** `timm_model = "efficientnet_b0.ra_in1k"` instead of `resnet18.a1_in1k`.
   - Grad-CAM layer: `bn2`, already in `last_feature_layer`.
@@ -31,7 +31,7 @@ add table with thresholds
 
 ## Results
 
-![Precision-recall curves](../figures/exp32_efficientnet_b0_5fold_pr_curves.png)
+![Precision-recall curves](../../figures/exp32_efficientnet_b0_5fold_pr_curves.png)
 
 | class | exp26 threshold | exp26 F1 | EfficientNet-B0 threshold | EfficientNet-B0 F1 |
 |---|---|---|---|---|
@@ -43,11 +43,11 @@ add table with thresholds
 
 Out-of-fold rows of folds 0–4 pooled, best-F1 threshold per model and class (submission thresholds).
 
-![Moris validation](../figures/exp32_efficientnet_b0_5fold_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp32_efficientnet_b0_5fold_grad_cam_moris_validation.png)
 
-![Motya validation](../figures/exp32_efficientnet_b0_5fold_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp32_efficientnet_b0_5fold_grad_cam_motya_validation.png)
 
-![Biatrix validation](../figures/exp32_efficientnet_b0_5fold_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp32_efficientnet_b0_5fold_grad_cam_biatrix_validation.png)
 
 All labeled positives per VIP class in folds 0–4 (56 Moris, 42 Motya, 41 Biatrix), fold model that held image out.
 
