@@ -16,19 +16,19 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp19_grad_cam_cats_dogs.ipynb](../../notebooks/experiments/exp19_grad_cam_cats_dogs.ipynb), no training
+- **Notebook:** [exp19_grad_cam_cats_dogs.ipynb](../../../notebooks/experiments/exp19_grad_cam_cats_dogs.ipynb), no training
 - **Tracking:** none
 - **What changes:** classes Cat and Dog instead of VIP; random sample of 16 positives per class, fixed seed, instead of all positives.
-- **What stays fixed:** exp12 method, `core.analysis.gradcam.GradCamFigures.positives`; exp16 checkpoints and OOF, folds 0 and 1, Grad-CAM on `layer4`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
+- **What stays fixed:** exp12 method, `analysis.gradcam.GradCamFigures.positives`; exp16 checkpoints and OOF, folds 0 and 1, Grad-CAM on `layer4`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
 - **Metric:** none, visual
 
 ## Fixes
 
 ## Results
 
-![Cat validation](../figures/exp19_grad_cam_cats_dogs_cat_validation.png)
+![Cat validation](../../figures/exp19_grad_cam_cats_dogs_cat_validation.png)
 
-![Dog validation](../figures/exp19_grad_cam_cats_dogs_dog_validation.png)
+![Dog validation](../../figures/exp19_grad_cam_cats_dogs_dog_validation.png)
 
 16 random labeled positives per class (seed 0) from out-of-fold rows of folds 0 and 1, sorted by out-of-fold prob; caption: fold model, its prob, green at or above best-F1 threshold (Cat 0.666, Dog 0.392), red below. Misses: Cat 1 (kitten on leopard-print chair, p 0.101, heat on chair back), Dog 1 (Boston terrier side view, p 0.086, heat on red collar only).
 
