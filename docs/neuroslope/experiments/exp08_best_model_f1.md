@@ -17,10 +17,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp08_best_model_f1.ipynb](../../notebooks/experiments/exp08_best_model_f1.ipynb), no training
+- **Notebook:** [exp08_best_model_f1.ipynb](../../../notebooks/experiments/exp08_best_model_f1.ipynb), no training
 - **Tracking:** none
-- **What changes:** nothing trained; evaluation only. Thresholds: `core.predict.best_f1` (max F1 per class), same rule as `docs/methods/configuration.md`.
-- **What stays fixed:** exp04 results `data/processed/cv/cnn-model-oversampling-vip/ResNet-18/` loaded via `CVResult.load`, config `configs/models/exp04_oversampling_vip/resnet18.yaml`.
+- **What changes:** nothing trained; evaluation only. Thresholds: `core.predict.best_f1` (max F1 per class), same rule as `docs/neuroslope/methods/configuration.md`.
+- **What stays fixed:** exp04 results `data/processed/cv/cnn-model-oversampling-vip/ResNet-18/` loaded via `CVResult.load`, config `configs/exp04_oversampling_vip/resnet18.yaml`.
 - **Metric:** Macro F1 (target), mean of 5 per-class F1, scored on out-of-fold rows of folds 0 and 1
 
 ## Fixes
