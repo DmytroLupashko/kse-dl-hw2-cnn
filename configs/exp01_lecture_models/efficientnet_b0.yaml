@@ -1,4 +1,4 @@
-name: "AlexNet"
+name: "EfficientNet-B0"
 experiment: "cnn-model-lecture-models"
 data:
   img_size: 224
@@ -7,6 +7,9 @@ data:
 model:
   pos_weight_power: 0.75  # damped ratio without oversampling
   net:
-    class_path: core.training.model.alexnet_imagenet
+    class_path: training.model.timm_net
+    init_args:
+      model_name: "tf_efficientnet_b0.in1k"
+      pretrained: true
 trainer:
   max_epochs: 10

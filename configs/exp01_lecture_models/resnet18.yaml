@@ -1,4 +1,4 @@
-name: "EfficientNet-B0"
+name: "ResNet-18"
 experiment: "cnn-model-lecture-models"
 data:
   img_size: 224
@@ -7,9 +7,9 @@ data:
 model:
   pos_weight_power: 0.75  # damped ratio without oversampling
   net:
-    class_path: core.training.model.timm_net
+    class_path: training.model.timm_net
     init_args:
-      model_name: "tf_efficientnet_b0.in1k"
+      model_name: "resnet18.a1_in1k"
       pretrained: true
 trainer:
   max_epochs: 10

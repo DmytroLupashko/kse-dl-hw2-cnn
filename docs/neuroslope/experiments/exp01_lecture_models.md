@@ -17,7 +17,7 @@ How do ImageNet-pretrained ResNet-18, EfficientNet-B0, AlexNet differ?
 
 ## Setup
 
-- **Notebook:** [exp01_lecture_models.ipynb](../../notebooks/experiments/exp01_lecture_models.ipynb)
+- **Notebook:** [exp01_lecture_models.ipynb](../../../notebooks/experiments/exp01_lecture_models.ipynb)
 - **Tracking:** `cnn-model-lecture-models`
 - **What changes:** model
   - ResNet-18 `resnet18.a1_in1k`
@@ -43,9 +43,9 @@ change exp01 so it does not contain Convnext, but contains alex net
 
 ## Results
 
-![training](../figures/exp01_lecture_models_training.png)
+![training](../../figures/exp01_lecture_models_training.png)
 
-![PR curves](../figures/exp01_lecture_models_pr.png)
+![PR curves](../../figures/exp01_lecture_models_pr.png)
 
 | model | Cat | Dog | Moris | Motya | Biatrix | mAP | mAP fold 0 | mAP fold 1 | macro F1 |
 |---|---|---|---|---|---|---|---|---|---|
