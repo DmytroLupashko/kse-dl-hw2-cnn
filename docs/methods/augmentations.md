@@ -6,7 +6,7 @@ Recipe design sources:
 - Shorten, Khoshgoftaar (2019), [A Survey on Image Data Augmentation for Deep Learning](https://doi.org/10.1186/s40537-019-0197-0), Journal of Big Data. Map of all families: geometric, color, erasing, mixing, learned policies, TTA.
 - Müller, Hutter (2021), [TrivialAugment](https://arxiv.org/abs/2103.10158), ICCV. One random op, random strength per image beats tuned policies; baseline for picking op pool and strength.
 
-Related: `docs/oversampling.md` (VIP sampling), `docs/gradcam_augmentations.md` (pseudo-boxes, Grad-CAM-guided, whole-animal).
+Related: `docs/methods/oversampling.md` (VIP sampling), `docs/methods/gradcam_augmentations.md` (pseudo-boxes, Grad-CAM-guided, whole-animal).
 
 Multilabel twist: augmentation valid only if every present class stays visible. Crop cutting Biatrix out leaves `Biatrix = 1` on image without Biatrix: label noise.
 
@@ -16,21 +16,21 @@ Figures: one training image per VIP class, 448 px, each augmentation at p = 1, f
 
 ## In this project
 
-`Config.augment` picks key of `core.augment.RECIPES` (recipe class tree in `core/augment/recipes.py`). Applied on the fly in `MultilabelImageDataset.__getitem__` via `core.augment.RowTransform`. Validation, test: `Validation`, resize plus normalize.
+`DataConfig.augment` picks key of `core.data.augment.RECIPES` (recipe class tree in `src/core/data/augment/recipes.py`). Applied on the fly in `MultilabelImageDataset.__getitem__` via `core.data.augment.RowTransform`. Validation, test: `Validation`, resize plus normalize.
 
 Default `Default` (`augment = "default"`): `Resize`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate_percent=0.1, scale=(0.8, 1.2), rotate=(-15, 15), p=0.5)`.
 
-![Current recipe, 6 draws](figures/augmentations_recipe_current.png)
+![Current recipe, 6 draws](../figures/augmentations_recipe_current.png)
 
 Lecture `Lecture` (`augment = "lecture"`, exp03): `Resize`, `HorizontalFlip(p=0.5)`, `VerticalFlip(p=0.5)`, `RandomBrightnessContrast(0.5, 0.5, p=0.5)`, `HueSaturationValue(20, 30, 20, p=0.5)`. Strong color: Motya pink or almost black, Biatrix yellow-green; half upside down.
 
-![Lecture recipe, 6 draws](figures/augmentations_recipe_lecture.png)
+![Lecture recipe, 6 draws](../figures/augmentations_recipe_lecture.png)
 
 ## Geometric
 
 Albumentations [Affine API](https://albumentations.ai/docs/api-reference/albumentations/augmentations/geometric/transforms/#Affine).
 
-![Geometric augmentations](figures/augmentations_geometric.png)
+![Geometric augmentations](../figures/augmentations_geometric.png)
 
 `HorizontalFlip`: safest, mirrored cat same cat.
 
@@ -54,7 +54,7 @@ Orientations of square image (8, dihedral group D4), share per transform, 40000 
 - `keep_ratio=False` (default): x, y scale independent, animal stretches.
 - `border_mode` default `BORDER_CONSTANT`, `fill=0`: black corners only on augmented images. `cv2.BORDER_REFLECT_101` looks like scene.
 
-![Rotate vs shear](figures/augmentations_shear_vs_rotate.png)
+![Rotate vs shear](../figures/augmentations_shear_vs_rotate.png)
 
 Shear slants (corgi leans), rotation rigid.
 
@@ -67,7 +67,7 @@ Shear slants (corgi leans), rotation rigid.
 - Far-apart objects: union nearly whole image, crop does little.
 - Size, aspect vary: `Resize` after.
 - `erosion_rate` > 0: union shrunk, edge objects cut; single box ignores it; no boxes, random crop. Label must then follow surviving boxes (`BboxParams(min_visibility=...)`).
-- Needs boxes. Manual boxes banned (`docs/rules.md`); v3 uses Grad-CAM pseudo-boxes (`docs/gradcam_augmentations.md`).
+- Needs boxes. Manual boxes banned (`docs/task/rules.md`); v3 uses Grad-CAM pseudo-boxes (`docs/methods/gradcam_augmentations.md`).
 
 `Perspective`: projective warp, frame filled. In v2 draft, removed.
 
@@ -78,7 +78,7 @@ Shear slants (corgi leans), rotation rigid.
 - Zini et al. (2023), [Planckian Jitter](https://arxiv.org/abs/2202.07993), ICLR. Color jitter destroys color features; color-temperature shift keeps them. Cited exp06, exp07.
 - Albumentations [transform reference](https://albumentations.ai/docs/reference/supported-targets-by-transform/): `RandomGamma`, `CLAHE`, `RGBShift`, `PlanckianJitter`.
 
-![Color augmentations](figures/augmentations_color.png)
+![Color augmentations](../figures/augmentations_color.png)
 
 - `RandomBrightnessContrast`: 0.2 mild; 0.5 blacks out dark scenes, Moris vanishes.
 - `HueSaturationValue`: hue 20 changes coat, VIP identity risk.
@@ -92,7 +92,7 @@ Experiments: color on VIP images hurt Moris, Motya (exp05, exp07).
 
 ## Noise, blur, quality
 
-![Noise and blur augmentations](figures/augmentations_noise.png)
+![Noise and blur augmentations](../figures/augmentations_noise.png)
 
 Phone-photo defects: `MotionBlur` (moving pet), `GaussNoise` (low light), `ImageCompression` (forwarded photos), `Downscale` (far animal), `GaussianBlur`.
 
@@ -104,7 +104,7 @@ Experiments: degradation hurt VIP (exp07); JPEG quality 10 hurt VIP, maps unchan
 
 ## Occlusion
 
-![Occlusion augmentations](figures/augmentations_occlusion.png)
+![Occlusion augmentations](../figures/augmentations_occlusion.png)
 
 `CoarseDropout`: `fill=0` invisible on black Moris; `fill="random_uniform"` visible on any coat. Large holes can cover animal, label wrong. Lecture torchvision: `RandomErasing(p=0.5, scale=(0.02, 0.33), ratio=(0.3, 3.3))` after `Normalize`.
 
@@ -114,7 +114,7 @@ Experiments: colored `CoarseDropout` on non-VIP rows only safe, Kaggle up (exp20
 
 ## Mixing two or more images
 
-![Mixing augmentations](figures/augmentations_mixing.png)
+![Mixing augmentations](../figures/augmentations_mixing.png)
 
 MixUp, CutMix, Mosaic: batch-level, not in Albumentations pipeline. Multilabel:
 
@@ -125,7 +125,7 @@ MixUp, CutMix, Mosaic: batch-level, not in Albumentations pipeline. Multilabel:
 
 ## Test-time augmentation (TTA)
 
-![TTA views](figures/augmentations_tta.png)
+![TTA views](../figures/augmentations_tta.png)
 
 Lecture: `ttach`, `tta.ClassificationTTAWrapper(model, tta.aliases.flip_transform())`. Installed.
 

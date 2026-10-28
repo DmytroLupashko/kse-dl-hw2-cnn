@@ -17,10 +17,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp15_grad_cam_train_val_efficientnet.ipynb](../notebooks/experiments/exp15_grad_cam_train_val_efficientnet.ipynb), no training
+- **Notebook:** [exp15_grad_cam_train_val_efficientnet.ipynb](../../notebooks/experiments/exp15_grad_cam_train_val_efficientnet.ipynb), no training
 - **Tracking:** none
 - **What changes:** model, exp10 EfficientNet-B0 instead of exp11 ResNet-18; only folds 0 and 1 trained, so only positives of those folds (55 of 139), train view by other fold model.
-- **What stays fixed:** exp12 method, `core.gradcam.GradCamFigures.positives`; exp10 checkpoints `checkpoints/cnn-model-efficientnet/EfficientNet-B0 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-efficientnet/EfficientNet-B0/`, Grad-CAM on `bn2`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
+- **What stays fixed:** exp12 method, `core.analysis.gradcam.GradCamFigures.positives`; exp10 checkpoints `checkpoints/cnn-model-efficientnet/EfficientNet-B0 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-efficientnet/EfficientNet-B0/`, Grad-CAM on `bn2`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
 - **Metric:** none, visual
 
 ## Fixes

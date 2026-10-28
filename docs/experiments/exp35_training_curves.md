@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp35_training_curves.ipynb](../notebooks/experiments/exp35_training_curves.ipynb)
+- **Notebook:** [exp35_training_curves.ipynb](../../notebooks/experiments/exp35_training_curves.ipynb)
 - **Tracking:** none; reads fold runs of `cnn-model-resnet18-5fold`, `cnn-model-coarse-dropout-5fold`, `cnn-model-downsample-5fold`
 - **What changes:** nothing trained; per-epoch `train_loss_epoch`, `val_loss`, `train_map`, `val_map` from MLflow history.
 - **What stays fixed:** logged runs as is, folds 0–4.

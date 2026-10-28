@@ -15,3 +15,7 @@ One line per change and the break it fixes (see "Experiment Skill: Approaches an
 - 2026-10-16: Fixes section after Setup: my fix requests after build, verbatim.
 - 2026-10-17: Build step 5: smoke tracking experiment and smoke checkpoints deleted after verify; they piled up (6.8 GB) and were never read.
 - 2026-10-17: Build step 3: training through `core.cv` and one TOML config per model (from playground); notebook passes smoke `OVERRIDES`, holds no training loop.
+- 2026-10-26: Build step 3-4: smoke logic out of notebooks into project code (`core`), notebooks plain full-scale; shared helpers from `core`, no copies.
+- 2026-10-27: Training configs YAML instead of TOML (`Config.from_yaml`), CLI `--key=value` (`core.configurator`).
+- 2026-10-27: Sections removed: one numbering, card `docs/experiments/`, notebook `notebooks/experiments/`, configs `configs/`, figures `docs/figures/`; tracking `<prefix>-expNN-<slug>`.
+- 2026-10-28: examples.md: bad and good card fields from exp01 critique (`drafts/verbosity.md`); Request step 2 points to it.

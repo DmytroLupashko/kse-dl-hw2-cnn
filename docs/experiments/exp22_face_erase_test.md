@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp22_face_erase_test.ipynb](../notebooks/experiments/exp22_face_erase_test.ipynb), no training
+- **Notebook:** [exp22_face_erase_test.ipynb](../../notebooks/experiments/exp22_face_erase_test.ipynb), no training
 - **Tracking:** none
 - **What changes:** input only: face box from `data/processed/boxes_face.csv` (exp21 boxes, exp20 Grad-CAM ≥ 0.8 of max, fold model that held image out) filled with normalization mean (gray 128); control: same-size box, random place not overlapping face, same fill, fixed seed.
 - **What stays fixed:** exp16, exp20, exp21 fold models of folds 0 and 1, each image scored by model that held it out; `val_tfms` 224 px; thresholds best-F1 on clean OOF rows, per model; all generic Cat (1994 of 1995) and Dog (1993 of 1994) positives of folds 0 and 1 with face box.

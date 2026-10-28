@@ -16,10 +16,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp19_grad_cam_cats_dogs.ipynb](../notebooks/experiments/exp19_grad_cam_cats_dogs.ipynb), no training
+- **Notebook:** [exp19_grad_cam_cats_dogs.ipynb](../../notebooks/experiments/exp19_grad_cam_cats_dogs.ipynb), no training
 - **Tracking:** none
 - **What changes:** classes Cat and Dog instead of VIP; random sample of 16 positives per class, fixed seed, instead of all positives.
-- **What stays fixed:** exp12 method, `core.gradcam.GradCamFigures.positives`; exp16 checkpoints and OOF, folds 0 and 1, Grad-CAM on `layer4`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
+- **What stays fixed:** exp12 method, `core.analysis.gradcam.GradCamFigures.positives`; exp16 checkpoints and OOF, folds 0 and 1, Grad-CAM on `layer4`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
 - **Metric:** none, visual
 
 ## Fixes

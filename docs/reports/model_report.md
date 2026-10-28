@@ -73,7 +73,7 @@ Pattern: color or texture change hurts VIP identity by coat; non-VIP-only augmen
 
 ## Kaggle public scores (AI written)
 
-![Kaggle public scores](figures/kaggle_public_scores.png)
+![Kaggle public scores](../figures/kaggle_public_scores.png)
 
 | submission | public score |
 |---|---|
@@ -87,14 +87,14 @@ Pattern: color or texture change hurts VIP identity by coat; non-VIP-only augmen
 
 Precision-recall curves, 4 models, out-of-fold rows of folds 0–4 (exp36):
 
-![Precision-recall curves](figures/exp36_model_comparison_pr_curves.png)
+![Precision-recall curves](../figures/exp36_model_comparison_pr_curves.png)
 
 Grad-CAM, same 16 VIP positives per class, 4 models stacked (exp36):
 
-![Moris Grad-CAM](figures/exp36_model_comparison_grad_cam_moris_compare.png)
+![Moris Grad-CAM](../figures/exp36_model_comparison_grad_cam_moris_compare.png)
 
-![Motya Grad-CAM](figures/exp36_model_comparison_grad_cam_motya_compare.png)
+![Motya Grad-CAM](../figures/exp36_model_comparison_grad_cam_motya_compare.png)
 
-![Biatrix Grad-CAM](figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
+![Biatrix Grad-CAM](../figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
 
 Uncertain: local scores from training photos only; Kaggle VIP photos differ, one seed.

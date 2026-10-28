@@ -18,10 +18,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp02_grad_cam.ipynb](../notebooks/experiments/exp02_grad_cam.ipynb), no training
+- **Notebook:** [exp02_grad_cam.ipynb](../../notebooks/experiments/exp02_grad_cam.ipynb), no training
 - **Tracking:** `cnn-model-grad-cam` (one run, 6 figures as artifacts)
 - **What changes:** VIP class, prediction outcome (correct or incorrect)
-- **What stays fixed:** model ResNet-18 `resnet18.a1_in1k` from `docs/configuration.md`, checkpoints `checkpoints/cnn-model-lecture-models/ResNet-18 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, `core.data.val_tfms` at 224 px; Grad-CAM on last block `layer4` (own implementation via forward/backward hooks in `core.model`, no new dependency), ReLU of gradient-weighted activations, upsampled to 224 px, overlay on resized image with `jet` colormap at alpha 0.5 (as in Advanced CNN lecture)
+- **What stays fixed:** model ResNet-18 `resnet18.a1_in1k` from `docs/methods/configuration.md`, checkpoints `checkpoints/cnn-model-lecture-models/ResNet-18 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-lecture-models/ResNet-18/`, `core.data.dataset.val_tfms` at 224 px; Grad-CAM on last block `layer4` (own implementation via forward/backward hooks in `core.training.model`, no new dependency), ReLU of gradient-weighted activations, upsampled to 224 px, overlay on resized image with `jet` colormap at alpha 0.5 (as in Advanced CNN lecture)
 - **Metric:** none, visual; class threshold from best F1 on pooled folds 0 and 1
 
 ## Fixes

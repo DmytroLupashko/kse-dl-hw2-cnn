@@ -21,9 +21,9 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp21_face_erase.ipynb](../notebooks/experiments/exp21_face_erase.ipynb), config `configs/exp21_face_erase/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp21_face_erase.ipynb](../../notebooks/experiments/exp21_face_erase.ipynb), config `configs/models/exp21_face_erase/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-face-erase`
-- **What changes:** `augment = "face_erase"`: exp20 recipe plus, on non-VIP rows only, face box erase in front: each Cat or Dog face box filled with one random color with p 0.5, box above 30% of image skipped (`EraseBoxes`, exp14). Face box: bounding rectangle of exp20 Grad-CAM map ≥ 0.8 of max (exp14 used 0.5, boxes covered whole animal), one per present Cat or Dog, by exp20 fold model that held image out, else fold 0; `data/processed/boxes_face.csv` by `python -m core.boxes --face` (10097 boxes, median 4.1% of image; exp14 0.5 boxes of Cat, Dog 15.4%).
+- **What changes:** `augment = "face_erase"`: exp20 recipe plus, on non-VIP rows only, face box erase in front: each Cat or Dog face box filled with one random color with p 0.5, box above 30% of image skipped (`EraseBoxes`, exp14). Face box: bounding rectangle of exp20 Grad-CAM map ≥ 0.8 of max (exp14 used 0.5, boxes covered whole animal), one per present Cat or Dog, by exp20 fold model that held image out, else fold 0; `data/processed/boxes_face.csv` by `python -m core.boxes.pseudo --face` (10097 boxes, median 4.1% of image; exp14 0.5 boxes of Cat, Dog 15.4%).
 - **What stays fixed:** exp20 setup (non-VIP colored holes, `oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`), 10 epochs, folds 0 and 1; exp16, exp20 results reused.
 - **Metric:** count of exp19 images with Grad-CAM heat on body, by eye (main); AP per class on out-of-fold rows of folds 0 and 1 (pooled), from PR curves (guard, VIP must not drop).
 

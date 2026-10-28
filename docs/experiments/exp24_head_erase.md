@@ -21,9 +21,9 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp24_head_erase.ipynb](../notebooks/experiments/exp24_head_erase.ipynb), config `configs/exp24_head_erase/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp24_head_erase.ipynb](../../notebooks/experiments/exp24_head_erase.ipynb), config `configs/models/exp24_head_erase/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-head-erase`
-- **What changes:** `augment = "head_erase"`: exp21 recipe, erased Cat box = head box: exp21 Cat face box (`data/processed/boxes_face.csv`) 2× wide around center, top edge raised by 1× face height, bottom edge lowered by 0.25× face height (covers ears above core), clipped to image (median 18.1% of image, 13.4% above 30%, skipped). Dog boxes unchanged (exp21 face boxes). New file `data/processed/boxes_head.csv` by `python -m core.boxes --head`, from face file, no new Grad-CAM. Same head box in exam (step 2, 3).
+- **What changes:** `augment = "head_erase"`: exp21 recipe, erased Cat box = head box: exp21 Cat face box (`data/processed/boxes_face.csv`) 2× wide around center, top edge raised by 1× face height, bottom edge lowered by 0.25× face height (covers ears above core), clipped to image (median 18.1% of image, 13.4% above 30%, skipped). Dog boxes unchanged (exp21 face boxes). New file `data/processed/boxes_head.csv` by `python -m core.boxes.pseudo --head`, from face file, no new Grad-CAM. Same head box in exam (step 2, 3).
 - **What stays fixed:** exp21 setup: erase on non-VIP rows only, p 0.5 per box, random color, box above 30% of image skipped; exp20 colored holes on non-VIP rows; `oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`; 10 epochs, folds 0 and 1; exp16, exp20, exp21 results reused. Exam as exp23: fold model that held image out, fill gray 128, thresholds best-F1 on clean OOF rows, seed 0.
 - **Metric:** Cat recall without head and ears, drop beyond random box (main); AP per class on out-of-fold rows of folds 0 and 1 (pooled), from PR curves (guard, VIP must not drop).
 

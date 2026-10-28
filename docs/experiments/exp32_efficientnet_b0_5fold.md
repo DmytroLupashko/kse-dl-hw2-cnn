@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp32_efficientnet_b0_5fold.ipynb](../notebooks/experiments/exp32_efficientnet_b0_5fold.ipynb), config `configs/exp32_efficientnet_b0_5fold/efficientnet_b0.toml`, training `core.cv`
+- **Notebook:** [exp32_efficientnet_b0_5fold.ipynb](../../notebooks/experiments/exp32_efficientnet_b0_5fold.ipynb), config `configs/models/exp32_efficientnet_b0_5fold/efficientnet_b0.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-efficientnet-b0-5fold`
 - **What changes:** `timm_model = "efficientnet_b0.ra_in1k"` instead of `resnet18.a1_in1k`.
   - Grad-CAM layer: `bn2`, already in `last_feature_layer`.

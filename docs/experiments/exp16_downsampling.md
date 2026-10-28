@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp16_downsampling.ipynb](../notebooks/experiments/exp16_downsampling.ipynb), config `configs/exp16_downsampling/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp16_downsampling.ipynb](../../notebooks/experiments/exp16_downsampling.ipynb), config `configs/models/exp16_downsampling/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-downsampling`
 - **What changes:** `downsample = 0.2`: each epoch random 20% of non-VIP rows (Cat, Dog, none), all VIP rows; `pos_weight` computed on sampled epoch, so VIP weight drops (Moris ~27 to ~7).
 - **What stays fixed:** exp11 setup, 10 epochs (so ~4× fewer steps), folds 0 and 1; exp11 results reused.

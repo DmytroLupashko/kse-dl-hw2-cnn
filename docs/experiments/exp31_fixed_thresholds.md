@@ -15,7 +15,7 @@ On out-of-fold rows of folds 0–4, do fixed thresholds 0.5 0.5 0.8 0.8 0.8 (Cat
 
 ## Setup
 
-- **Notebook:** [exp31_fixed_thresholds.ipynb](../notebooks/experiments/exp31_fixed_thresholds.ipynb), saved CV results (`CVResult.load`), hand thresholds in `THRESHOLDS`
+- **Notebook:** [exp31_fixed_thresholds.ipynb](../../notebooks/experiments/exp31_fixed_thresholds.ipynb), saved CV results (`CVResult.load`), hand thresholds in `THRESHOLDS`
 - **Tracking:** none
 - **What changes:** Cat, Dog 0.5; VIP thresholds best-F1, 0.8 0.8 0.8, 0.9 0.9 0.7, or 0.85 0.9 0.75 (Moris, Motya, Biatrix).
 - **What stays fixed:** exp11, exp29, exp26 OOF predictions; best-F1 thresholds by `core.predict.best_f1` on pooled rows (submission thresholds).

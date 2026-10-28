@@ -19,10 +19,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp11_resnet18_5fold.ipynb](../notebooks/experiments/exp11_resnet18_5fold.ipynb), config `configs/exp11_resnet18_5fold/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp11_resnet18_5fold.ipynb](../../notebooks/experiments/exp11_resnet18_5fold.ipynb), config `configs/models/exp11_resnet18_5fold/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-resnet18-5fold`
 - **What changes:** `folds = [0, 1, 2, 3, 4]` instead of `[0, 1]`; all 12260 train rows out-of-fold once, VIP positives 56, 42, 41 instead of 22, 17, 16.
-  - Folds 0 and 1 retrained, not reused: reuse keyed by tracking experiment and run name (`core.train.train`), and keeping exp09 experiment would overwrite exp09 results that exp10 loads. Cost about 2 × 13 min; retrain doubles as noise check (step 2).
+  - Folds 0 and 1 retrained, not reused: reuse keyed by tracking experiment and run name (`core.training.train.train`), and keeping exp09 experiment would overwrite exp09 results that exp10 loads. Cost about 2 × 13 min; retrain doubles as noise check (step 2).
 - **What stays fixed:** exp09 setup: `resnet18.a1_in1k`, `oversample = 8`, `pos_weight_power = 1.0`, `augment = "default"`, Adam, cosine lr 1e-3 to 1e-5, 10 epochs, batch 64, 224 px, best checkpoint by `val_map`, `SEED`. No test predictions, no submission.
 - **Metric:** per-class AP, mAP and Macro F1 per validation fold, mean and standard deviation over folds 0–4; Macro F1 on pooled out-of-fold rows, thresholds tuned on other folds.
 

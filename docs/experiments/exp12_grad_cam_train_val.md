@@ -17,10 +17,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp12_grad_cam_train_val.ipynb](../notebooks/experiments/exp12_grad_cam_train_val.ipynb), no training
+- **Notebook:** [exp12_grad_cam_train_val.ipynb](../../notebooks/experiments/exp12_grad_cam_train_val.ipynb), no training
 - **Tracking:** none
 - **What changes:** model per image: fold model that held it out (validation) or one that trained on it (train)
-- **What stays fixed:** exp11 checkpoints `checkpoints/cnn-model-resnet18-5fold/ResNet-18 fold {0..4}/`, OOF from `data/processed/cv/cnn-model-resnet18-5fold/ResNet-18/`, `core.gradcam` on `layer4`, `val_tfms` 224 px
+- **What stays fixed:** exp11 checkpoints `checkpoints/cnn-model-resnet18-5fold/ResNet-18 fold {0..4}/`, OOF from `data/processed/cv/cnn-model-resnet18-5fold/ResNet-18/`, `core.analysis.gradcam` on `layer4`, `val_tfms` 224 px
 - **Metric:** none, visual
 
 ## Fixes

@@ -19,10 +19,10 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp01_first_overview.ipynb](../notebooks/experiments/exp01_first_overview.ipynb)
+- **Notebook:** [exp00_first_overview.ipynb](../../notebooks/experiments/exp00_first_overview.ipynb)
 - **Tracking:** `cnn-eda-first-overview` (counts, size stats, figures as artifacts)
 - **What changes:** nothing, descriptive only
-- **What stays fixed:** `SEED` from `core.config`, 16 images per contact sheet
+- **What stays fixed:** `SEED` from `core.training.config`, 16 images per contact sheet
 - **Metric:** image counts; width, height, format, mode distributions
 
 ## Fixes
@@ -34,7 +34,7 @@ All plots follow `dataviz` skill.
 
 All 12260 train and 18673 test images: 450 x 375, JPEG, RGB (ratio 1.0 each).
 
-![Class ratio](../figures/exp01_first_overview_classes.png)
+![Class ratio](../figures/exp00_first_overview_classes.png)
 
 Present label combinations (24 of 32 have zero images):
 
@@ -51,19 +51,19 @@ Present label combinations (24 of 32 have zero images):
 
 Contact sheets:
 
-![Cat](../figures/exp01_first_overview_sheet_cat.png)
+![Cat](../figures/exp00_first_overview_sheet_cat.png)
 
-![Dog](../figures/exp01_first_overview_sheet_dog.png)
+![Dog](../figures/exp00_first_overview_sheet_dog.png)
 
-![Moris](../figures/exp01_first_overview_sheet_moris.png)
+![Moris](../figures/exp00_first_overview_sheet_moris.png)
 
-![Motya](../figures/exp01_first_overview_sheet_motya.png)
+![Motya](../figures/exp00_first_overview_sheet_motya.png)
 
-![Biatrix](../figures/exp01_first_overview_sheet_biatrix.png)
+![Biatrix](../figures/exp00_first_overview_sheet_biatrix.png)
 
-![No cats or dogs](../figures/exp01_first_overview_sheet_no_cats_or_dogs.png)
+![No cats or dogs](../figures/exp00_first_overview_sheet_no_cats_or_dogs.png)
 
-![Cat and dog](../figures/exp01_first_overview_sheet_cat_and_dog.png)
+![Cat and dog](../figures/exp00_first_overview_sheet_cat_and_dog.png)
 
 Metric: image count and ratio; sizes on all train and test rows, classes and combinations on all 12260 train rows.
 

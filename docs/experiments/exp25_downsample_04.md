@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp25_downsample_04.ipynb](../notebooks/experiments/exp25_downsample_04.ipynb), config `configs/exp25_downsample_04/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp25_downsample_04.ipynb](../../notebooks/experiments/exp25_downsample_04.ipynb), config `configs/models/exp25_downsample_04/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-downsample-04`
 - **What changes:** `downsample = 0.4`: non-VIP rows random 40% per epoch instead of 20%. Generic share of Cat draws 58% to 74%, of Dog draws 75% to 86%; epoch about 1.7× longer.
 - **What stays fixed:** exp20 setup: `augment = "coarse_dropout_non_vip"` (colored holes on non-VIP rows), `oversample = 8`, full ratio `pos_weight` counted over draws; 10 epochs, folds 0 and 1; exp20 results reused.

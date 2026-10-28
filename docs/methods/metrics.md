@@ -48,7 +48,7 @@ Share of class weight carried by positives, $w_c n_c / (w_c n_c + N - n_c)$:
 | Motya | 0.3% | 5.5% | 50% |
 | Biatrix | 0.3% | 5.5% | 50% |
 
-Real limit is 41–56 photos, not weight; more variety (oversampling with augmentation, `docs/oversampling.md`) adds information, weight does not.
+Real limit is 41–56 photos, not weight; more variety (oversampling with augmentation, `docs/methods/oversampling.md`) adds information, weight does not.
 
 How to pick:
 
@@ -130,7 +130,7 @@ Read:
 
 ### Training mAP vs validation mAP
 
-Same formula, different images. `val_map`: mAP on held-out fold, computed after epoch with fixed weights. `train_map`: mAP on training images, collected during epoch. `core/model.py`: every `training_step` feeds batch probs $\sigma(z_{ic})$ into `MultilabelAveragePrecision(average="macro")`, `on_train_epoch_end` computes over all batches, then resets.
+Same formula, different images. `val_map`: mAP on held-out fold, computed after epoch with fixed weights. `train_map`: mAP on training images, collected during epoch. `src/core/training/model.py`: every `training_step` feeds batch probs $\sigma(z_{ic})$ into `MultilabelAveragePrecision(average="macro")`, `on_train_epoch_end` computes over all batches, then resets.
 
 Not trained on. Gradient comes from weighted BCE only; mAP not differentiable (depends on sort order), never optimized. Checkpoint chosen by `val_map`, not `train_map`. So `train_map` is diagnostic only: says how well model ranks images it learns from, on same scale as `val_map`.
 
@@ -145,7 +145,7 @@ Read:
 - Flach, Kull (2015), [Precision-Recall-Gain Curves: PR Analysis Done Right](https://papers.nips.cc/paper/2015/file/33e8075e9970de0cfea955afd4644bb2-Paper.pdf), NeurIPS. Iso-F1 curves in PR space; AP (arithmetic mean of precision) vs F1 (harmonic mean) can pick different models.
 - Lipton et al. (2014), below. Best F1 point on curve.
 
-![PR curve of Model B with iso-F1 curves](figures/pr_curve_iso_f1.png)
+![PR curve of Model B with iso-F1 curves](../figures/pr_curve_iso_f1.png)
 
 Dots: all 6 cuts $k$ of Model B (next section). Blue step: curve AP integrates. Shaded area: $AP = 0.83$. Dashed: iso-F1 curves through $k = 1$ (0.67) and $k = 3$ (0.8). Best cut $k = 3$ touches highest one. AP chooses model, iso-F1 geometry chooses $t_c$.
 
@@ -186,7 +186,7 @@ Here, per class:
 2. `pos_weight` inflates odds by $w_c$, best cut moves up. Damped $w_c$ differs by class: Cat 1.30, Moris 56.72.
 3. Scale differs per class, so $t_c$ per class, not one $t$.
 
-Cost: tuning is selection, overfits few positives (`docs/validation.md`, "Threshold tuning is selection").
+Cost: tuning is selection, overfits few positives (`docs/methods/validation.md`, "Threshold tuning is selection").
 
 ### Use
 

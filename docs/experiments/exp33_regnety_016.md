@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp33_regnety_016.ipynb](../notebooks/experiments/exp33_regnety_016.ipynb), config `configs/exp33_regnety_016/regnety_016.toml`, training `core.cv`
+- **Notebook:** [exp33_regnety_016.ipynb](../../notebooks/experiments/exp33_regnety_016.ipynb), config `configs/models/exp33_regnety_016/regnety_016.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-regnety-016`
 - **What changes:** `timm_model = "regnety_016.tv2_in1k"` instead of `resnet18.a1_in1k`.
   - Grad-CAM layer: `s4` (last stage, 7 × 7 at 224 px), added to `last_feature_layer`.

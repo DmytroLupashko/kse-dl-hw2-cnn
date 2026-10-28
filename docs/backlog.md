@@ -1,6 +1,6 @@
 # Backlog
 
-Source: `docs/Assignment_2_Task.md`. Task context: `docs/overview.md`.
+Source: `docs/task/Assignment_2_Task.md`. Task context: `docs/task/overview.md`.
 
 - [x] Set up workflow (Github + local structure)
 - [ ] Code is clean and readable
@@ -8,7 +8,7 @@ Source: `docs/Assignment_2_Task.md`. Task context: `docs/overview.md`.
 
 ## EDA and Metric Analysis
 
-Section: `sections/eda/`.
+Report: `docs/reports/eda_report.md`.
 
 - [x] EDA: class balance, label co-occurrence, labels per image, image sizes, sample grids
 - [x] Macro F1 analysis: strengths, weaknesses, edge cases (rare class, empty predictions, threshold sensitivity)
@@ -16,10 +16,10 @@ Section: `sections/eda/`.
 - [x] Alternative target metric, justified
 ## Data Augmentation
 
-Section: `sections/model/`.
+Report: `docs/reports/model_report.md`.
 ## Validation
 
-Section: `sections/validation/`.
+Report: `docs/reports/validation_report.md`.
 
 - [x] Validation scheme (multilabel stratified K-fold or holdout) based on common sense
 - [x] Motivation for chosen scheme
@@ -27,7 +27,7 @@ Section: `sections/validation/`.
 
 ## CNN Model
 
-Section: `sections/model/`. Tracking: MLflow, `cnn-model-<slug>`.
+Report: `docs/reports/model_report.md`. Tracking: MLflow, `cnn-model-<slug>`, new `cnn-expNN-<slug>`.
 
 - [ ] Experiment + logging infra (PyTorch Lightning, MLflow)
 - [ ] Baseline timm CNN
@@ -43,7 +43,7 @@ Section: `sections/model/`. Tracking: MLflow, `cnn-model-<slug>`.
 
 ## Ensembling
 
-Section: `sections/ensemble/`.
+Report: `docs/reports/ensemble_report.md`.
 
 - [ ] Ensemble several CNNs (averaging, voting; not stacking)
 - [ ] [Optional] Logistic Regression stacking

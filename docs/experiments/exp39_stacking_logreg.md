@@ -16,7 +16,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp39_stacking_logreg.ipynb](../notebooks/experiments/exp39_stacking_logreg.ipynb)
+- **Notebook:** [exp39_stacking_logreg.ipynb](../../notebooks/experiments/exp39_stacking_logreg.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** combiner: one `LogisticRegression` per class on members' logits of that class (4 features), instead of mean of probs.
   - Stacked OOF probs cross-fold: each fold predicted by meta-model fit on other 4 folds.

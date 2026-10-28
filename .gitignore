@@ -21,7 +21,7 @@ mlflow.db
 
 # Local-only files
 link.txt
-docs/theory_answers.md
+docs/task/theory_answers.md
 
 # Course materials (local copy)
 docs/course/
@@ -29,5 +29,6 @@ docs/course/
 # Lightning checkpoints
 checkpoints/
 
-# Scratch notebooks
-playground/
+# Scratch notebooks, configs
+notebooks/playground/
+configs/models/playground/

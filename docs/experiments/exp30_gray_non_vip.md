@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp30_gray_non_vip.ipynb](../notebooks/experiments/exp30_gray_non_vip.ipynb), config `configs/exp30_gray_non_vip/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp30_gray_non_vip.ipynb](../../notebooks/experiments/exp30_gray_non_vip.ipynb), config `configs/models/exp30_gray_non_vip/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-gray-non-vip`
 - **What changes:** `augment = "gray_non_vip"`: `ToGray(p=0.5)` on non-VIP rows only, before `Normalize`; validation untouched.
   - Risk: gray may become "not VIP" shortcut, clean generic cats then lean to VIP (false positives).

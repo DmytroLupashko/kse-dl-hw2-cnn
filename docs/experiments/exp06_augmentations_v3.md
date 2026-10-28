@@ -15,17 +15,17 @@ Does ResNet-18 with VIP oversampling ×8 and v3 augmentations give higher mean p
 3. Train ResNet-18 on folds 0 and 1 with v3, plot `train_loss`, `val_loss`, `val_map` per epoch, mean over 2 folds, one line per augmentation: baseline (exp04), v3.
 4. Tabulate AP of each class plus mAP, mean over folds 0 and 1, for baseline (exp04) and v3, plus per-fold difference of v3 to baseline, flag difference with same sign on both folds.
 5. Plot precision-recall curve per VIP class on out-of-fold rows of folds 0 and 1, one line per augmentation: baseline (exp04), lecture (exp03), v2 (exp05), v3.
-6. Plot exp02 Grad-CAM figures (`core.gradcam.GradCamFigures`) for v3: per VIP class one "correct" and one "incorrect" figure, 6 figures.
+6. Plot exp02 Grad-CAM figures (`core.analysis.gradcam.GradCamFigures`) for v3: per VIP class one "correct" and one "incorrect" figure, 6 figures.
 
 All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp06_augmentations_v3.ipynb](../notebooks/experiments/exp06_augmentations_v3.ipynb), config `configs/exp06_augmentations_v3/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp06_augmentations_v3.ipynb](../../notebooks/experiments/exp06_augmentations_v3.ipynb), config `configs/models/exp06_augmentations_v3/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-augmentations-v3`
 - **Reference:** [Choosing Augmentations for Model Generalization](https://albumentations.ai/docs/3-basic-usage/choosing-augmentations/). Densification: variation phone could produce but dataset lacks. Stress: unrealistic, label still obvious.
-- **What changes:** training augmentations, `augment = "v3"`, new `core.data.v3_tfms`, in reference build order:
-  - `BBoxSafeRandomCrop(erosion_rate=0.0, p=1)`: densification. Boxes: Grad-CAM pseudo-boxes of exp04 ResNet-18, `python -m core.boxes`, `data/processed/boxes.csv`; one per present class, top-scoring class for unlabeled images
+- **What changes:** training augmentations, `augment = "v3"`, new `core.data.dataset.v3_tfms`, in reference build order:
+  - `BBoxSafeRandomCrop(erosion_rate=0.0, p=1)`: densification. Boxes: Grad-CAM pseudo-boxes of exp04 ResNet-18, `python -m core.boxes.pseudo`, `data/processed/boxes.csv`; one per present class, top-scoring class for unlabeled images
   - `Resize(224, 224)`
   - `HorizontalFlip(p=0.5)`: densification
   - `RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, p=0.5)`: densification

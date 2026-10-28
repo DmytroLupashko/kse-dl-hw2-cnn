@@ -80,7 +80,7 @@ Read:
 
 ## Imbalanced classes
 
-Which metric under imbalance: `docs/metrics.md`.
+Which metric under imbalance: `docs/methods/metrics.md`.
 
 ### Noise from few positives
 
@@ -97,7 +97,7 @@ No paper; conclusion. Rotating only rare images through folds saves nothing: cos
 
 ### Threshold tuning is selection
 
-Read: Cawley, Talbot (2010), above; Lipton et al. (2014), cited in `docs/metrics.md`. Tune per-class threshold on pooled OOF predictions; 8 positives give only 9 recall values, optimum jagged.
+Read: Cawley, Talbot (2010), above; Lipton et al. (2014), cited in `docs/methods/metrics.md`. Tune per-class threshold on pooled OOF predictions; 8 positives give only 9 recall values, optimum jagged.
 
 ### Resampling and weighting interact with validation
 

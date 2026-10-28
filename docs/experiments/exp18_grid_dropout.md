@@ -20,7 +20,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp18_grid_dropout.ipynb](../notebooks/experiments/exp18_grid_dropout.ipynb), config `configs/exp18_grid_dropout/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp18_grid_dropout.ipynb](../../notebooks/experiments/exp18_grid_dropout.ipynb), config `configs/models/exp18_grid_dropout/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-grid-dropout`
 - **What changes:** `augment = "grid_dropout"`, all images, every step per draw in order (default recipe in brackets):
   1. `Resize` 224 (same)

@@ -6,7 +6,7 @@
 
 12260 train, 18673 test images, all 450 × 375 JPEG RGB.
 
-![Class ratio](sections/eda/figures/exp01_first_overview_classes.png)
+![Class ratio](docs/figures/exp00_first_overview_classes.png)
 
 - Cat 5077, Dog 5025; VIP animals rare: Moris 56, Motya 42, Biatrix 41.
 - Every VIP image also has parent label: Moris, Motya with Cat; Biatrix with Dog.
@@ -18,7 +18,7 @@
 - VIP oversampling ×8: each VIP image drawn 8 times per epoch, every draw augmented anew; plain shuffle leaves 3 of 4 batches without Moris (exp04, mAP up).
 - Non-VIP downsampling: random 20% of Cat, Dog, none rows per epoch, new draw each epoch; not worse, about 4× fewer steps (exp16).
 - Loss weight: BCE `pos_weight` full ratio $(N - n_c)/n_c$, counted over sampled draws, not rows (exp09, mAP up, smoother `val_map`).
-- Detail: [docs/oversampling.md](docs/oversampling.md).
+- Detail: [docs/methods/oversampling.md](docs/methods/oversampling.md).
 
 ### Metrics
 
@@ -57,13 +57,13 @@ AP on pooled out-of-fold rows of folds 0–4; Cat, Dog AP about 0.998 for all.
 - Newer backbones: Moris, Motya AP up vs ResNet-18, Biatrix down.
 - Grad-CAM: area narrows from ResNet-18 (whole-body blob) to ConvNeXt-Tiny (spots on head, paws); EfficientNet-B0 drifts to background most; misses fall on different images per model (exp36).
 
-![Precision-recall curves](sections/model/figures/exp36_model_comparison_pr_curves.png)
+![Precision-recall curves](docs/figures/exp36_model_comparison_pr_curves.png)
 
-![Moris Grad-CAM](sections/model/figures/exp36_model_comparison_grad_cam_moris_compare.png)
+![Moris Grad-CAM](docs/figures/exp36_model_comparison_grad_cam_moris_compare.png)
 
-![Motya Grad-CAM](sections/model/figures/exp36_model_comparison_grad_cam_motya_compare.png)
+![Motya Grad-CAM](docs/figures/exp36_model_comparison_grad_cam_motya_compare.png)
 
-![Biatrix Grad-CAM](sections/model/figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
+![Biatrix Grad-CAM](docs/figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
 
 ## Chosen hyperparameters
 
@@ -75,9 +75,9 @@ AP on pooled out-of-fold rows of folds 0–4; Cat, Dog AP about 0.998 for all.
 
 Submitted ResNet-18 runs (exp11, exp26, exp29), one thin line per fold (exp35):
 
-![Loss curves](sections/model/figures/exp35_training_curves_loss.png)
+![Loss curves](docs/figures/exp35_training_curves_loss.png)
 
-![mAP curves](sections/model/figures/exp35_training_curves_map.png)
+![mAP curves](docs/figures/exp35_training_curves_map.png)
 
 - Example exp29 fold 0: train mAP near 1 from epoch 2; validation mAP noisy early, validation loss falls overall.
 - Large train-validation gap, but validation not getting worse: no classic overfitting seen in checked runs.

@@ -18,11 +18,11 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp07_v3_ablation.ipynb](../notebooks/experiments/exp07_v3_ablation.ipynb), training `core.cv`
-  - `configs/exp07_v3_ablation/resnet18_box_crop.toml`
-  - `configs/exp07_v3_ablation/resnet18_new_aug.toml`
+- **Notebook:** [exp07_v3_ablation.ipynb](../../notebooks/experiments/exp07_v3_ablation.ipynb), training `core.training.cv`
+  - `configs/models/exp07_v3_ablation/resnet18_box_crop.yaml`
+  - `configs/models/exp07_v3_ablation/resnet18_new_aug.yaml`
 - **Tracking:** `cnn-model-v3-ablation`
-- **What changes:** training augmentations, two new recipes in `core.data`. With exp04 and exp06 they fill 2 × 2 design:
+- **What changes:** training augmentations, two new recipes in `core.data.dataset`. With exp04 and exp06 they fill 2 × 2 design:
 
   | | no crop | box-safe crop |
   |---|---|---|

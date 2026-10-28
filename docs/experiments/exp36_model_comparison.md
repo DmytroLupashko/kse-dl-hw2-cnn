@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp36_model_comparison.ipynb](../notebooks/experiments/exp36_model_comparison.ipynb)
+- **Notebook:** [exp36_model_comparison.ipynb](../../notebooks/experiments/exp36_model_comparison.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** nothing trained; models compared side by side.
 - **What stays fixed:** fold models and out-of-fold probs as saved, folds 0–4, sample seed 0.

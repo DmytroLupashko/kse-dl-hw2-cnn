@@ -18,9 +18,9 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp17_background_paste.ipynb](../notebooks/experiments/exp17_background_paste.ipynb), config `configs/exp17_background_paste/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp17_background_paste.ipynb](../../notebooks/experiments/exp17_background_paste.ipynb), config `configs/models/exp17_background_paste/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-background-paste`
-- **What changes:** `augment = "paste"`: with p 0.5, animal cut out by its pseudo-box (`data/processed/boxes.csv`, plus margin) and pasted at random place and scale onto random training image without Cat or Dog; labels kept. Then default recipe. Every oversampled VIP draw gets new room, not same bed or carpet (CMO, `docs/oversampling.md`). Applied to all images, not only VIP, so paste does not mean VIP.
+- **What changes:** `augment = "paste"`: with p 0.5, animal cut out by its pseudo-box (`data/processed/boxes.csv`, plus margin) and pasted at random place and scale onto random training image without Cat or Dog; labels kept. Then default recipe. Every oversampled VIP draw gets new room, not same bed or carpet (CMO, `docs/methods/oversampling.md`). Applied to all images, not only VIP, so paste does not mean VIP.
 - **What stays fixed:** exp16 setup (`oversample = 8`, `downsample = 0.2`), 10 epochs, folds 0 and 1; exp16 results reused.
 - **Metric:** AP per class on out-of-fold rows of folds 0 and 1 (pooled), from PR curves; Grad-CAM visual.
 

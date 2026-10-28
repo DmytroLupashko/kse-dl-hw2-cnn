@@ -3,31 +3,32 @@
 ## Project structure
 
 ```text
-├── core/           project code, one Python package
-├── sections/       experiments, in workflow order
-│   ├── eda/
-│   ├── validation/
-│   ├── model/
-│   └── ensemble/
-├── docs/           task, rules, backlog
-│   └── course/     Module 2 course materials (not in git)
+├── src/
+│   ├── core/       project code, one Python package
+│   │   ├── data/       datasets, folds, augmentations
+│   │   ├── training/   paths, configs, cross-validation, final fit, ensembles, submissions, model, tracking
+│   │   ├── analysis/   scores, Grad-CAM, figures
+│   │   └── boxes/      experimental Grad-CAM pseudo-boxes, unused later
+├── configs/
+│   └── models/       training configs, `expNN_<slug>/<model>.yaml`
+├── notebooks/
+│   ├── experiments/  one notebook per card
+│   ├── submissions/  notebooks that write submission
+│   └── playground/   scratch (not in git)
+├── tests/
+├── docs/
+│   ├── task/         task, rules, assignment
+│   ├── methods/      metrics, validation, augmentations, oversampling, ensembling
+│   ├── reports/      eda, validation, model, ensemble reports
+│   ├── experiments/  one card per experiment
+│   ├── figures/      all figures
+│   ├── backlog.md
+│   └── course/       Module 2 course materials (not in git)
 ├── data/           not in git
 │   ├── kaggle/       competition data as downloaded
 │   ├── processed/    generated files
 │   └── submissions/  CSVs for Kaggle
 └── ai_usage/       AI chat transcripts
-```
-
-Every section folder has same layout, folders appear with first file:
-
-```text
-<section>/
-├── <section>_report.md     section report
-├── experiments/            one card per experiment
-├── notebooks/
-│   ├── experiments/        one notebook per card
-│   └── submissions/        notebooks that write submission
-└── figures/                figures used in report
 ```
 
 ## AI usage

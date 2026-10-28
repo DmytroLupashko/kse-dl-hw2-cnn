@@ -2,11 +2,11 @@
 
 ## Data
 
-Source: [exp01 first overview](experiments/exp01_first_overview.md). Contact sheets: [Appendix](#appendix-contact-sheets).
+Source: [exp01 first overview](../experiments/exp00_first_overview.md). Contact sheets: [Appendix](#appendix-contact-sheets).
 
 All 12260 train and 18673 test images: 450 x 375, JPEG, RGB. One fixed size, aspect 1.2, not square.
 
-![Class ratio](figures/exp01_first_overview_classes.png)
+![Class ratio](../figures/exp00_first_overview_classes.png)
 
 Only 8 of 32 label combinations occur. Every VIP image also has parent label: Moris and Motya with Cat, Biatrix with Dog. Cat + Dog appears only in 4 images, all Cat + Dog + Moris + Biatrix. Moris + Motya together: 10 images.
 
@@ -20,7 +20,7 @@ Conclusions:
 
 ## Metrics
 
-See [docs/metrics.md](../../docs/metrics.md).
+See [docs/methods/metrics.md](../../docs/methods/metrics.md).
 
 What we will work with
 
@@ -40,7 +40,7 @@ Note that for loss also soft F1 macro was considered as it differentiable suroga
 
 ## Configuration (AI written)
 
-Reasoning behind [docs/configuration.md](../../docs/configuration.md).
+Reasoning behind [docs/methods/configuration.md](../../docs/methods/configuration.md).
 
 ### Metric
 
@@ -74,11 +74,11 @@ Rejected: soft macro F1. Differentiable surrogate of target, but no evidence it 
 
 ### Validation
 
-Scheme: multilabel stratified 5-fold CV. Theory: `docs/validation.md`.
+Scheme: multilabel stratified 5-fold CV. Theory: `docs/methods/validation.md`.
 
 Why CV, not holdout: VIP classes have 41 to 56 train images, about 8 to 11 per validation fold. One holdout split leaves score of these classes, i.e. 60% of Macro F1, on few images; CV uses every positive once for validation.
 
-Why 5 folds: convention ($k = 5$ or $10$), not tested against other $k$. $k = 4$ also defensible. Trade-off per fold, $k = 5$ vs $k = 4$: train share 80% vs 75%; VIP positives in validation about 8 to 11 vs 10 to 14, so per-fold AP less noisy at $k = 4$; compute 5 vs 4 trainings per model, $k = 4$ 20% cheaper; spread estimated from 5 vs 4 fold scores. Total positives validated identical, every image once. Changing $k$ reshuffles all folds (`N_FOLDS` in `core/config.py`), so scores across experiments with different $k$ not comparable.
+Why 5 folds: convention ($k = 5$ or $10$), not tested against other $k$. $k = 4$ also defensible. Trade-off per fold, $k = 5$ vs $k = 4$: train share 80% vs 75%; VIP positives in validation about 8 to 11 vs 10 to 14, so per-fold AP less noisy at $k = 4$; compute 5 vs 4 trainings per model, $k = 4$ 20% cheaper; spread estimated from 5 vs 4 fold scores. Total positives validated identical, every image once. Changing $k$ reshuffles all folds (`N_FOLDS` in `src/core/training/config.py`), so scores across experiments with different $k$ not comparable.
 
 Why multilabel stratification: every fold keeps share of each class, rare VIP classes included. Stratifying on one class leaves others split at random.
 
@@ -100,16 +100,16 @@ The question left: how exactly to tune BCE?
 
 Random samples from exp01, image count in title.
 
-![Cat](figures/exp01_first_overview_sheet_cat.png)
+![Cat](../figures/exp00_first_overview_sheet_cat.png)
 
-![Dog](figures/exp01_first_overview_sheet_dog.png)
+![Dog](../figures/exp00_first_overview_sheet_dog.png)
 
-![Moris](figures/exp01_first_overview_sheet_moris.png)
+![Moris](../figures/exp00_first_overview_sheet_moris.png)
 
-![Motya](figures/exp01_first_overview_sheet_motya.png)
+![Motya](../figures/exp00_first_overview_sheet_motya.png)
 
-![Biatrix](figures/exp01_first_overview_sheet_biatrix.png)
+![Biatrix](../figures/exp00_first_overview_sheet_biatrix.png)
 
-![No cats or dogs](figures/exp01_first_overview_sheet_no_cats_or_dogs.png)
+![No cats or dogs](../figures/exp00_first_overview_sheet_no_cats_or_dogs.png)
 
-![Cat and dog](figures/exp01_first_overview_sheet_cat_and_dog.png)
+![Cat and dog](../figures/exp00_first_overview_sheet_cat_and_dog.png)

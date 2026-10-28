@@ -20,7 +20,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp26_coarse_dropout_5fold.ipynb](../notebooks/experiments/exp26_coarse_dropout_5fold.ipynb), config `configs/exp26_coarse_dropout_5fold/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp26_coarse_dropout_5fold.ipynb](../../notebooks/experiments/exp26_coarse_dropout_5fold.ipynb), config `configs/models/exp26_coarse_dropout_5fold/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-coarse-dropout-5fold`
 - **What changes:** exp20 setup on `folds = [0, 1, 2, 3, 4]` instead of `[0, 1]`; vs exp11: `augment = "coarse_dropout_non_vip"` (colored holes on non-VIP rows), `downsample = 0.2`.
   - Folds 0 and 1 retrained, not reused: new tracking experiment keeps exp20 results (loaded by exp21, exp25) on 2 folds.

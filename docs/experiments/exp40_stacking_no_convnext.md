@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp40_stacking_no_convnext.ipynb](../notebooks/experiments/exp40_stacking_no_convnext.ipynb)
+- **Notebook:** [exp40_stacking_no_convnext.ipynb](../../notebooks/experiments/exp40_stacking_no_convnext.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** members: exp26 ResNet-18, EfficientNet-B0, RegNetY-016; ConvNeXt-Tiny dropped.
 - **What stays fixed:** exp39 stacking: per class `LogisticRegression`, L2, `C = 0.1`, members' logits, cross-fold OOF (fit on other 4 folds); plateau margin 0.05.

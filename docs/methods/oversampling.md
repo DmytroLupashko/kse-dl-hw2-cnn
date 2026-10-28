@@ -4,15 +4,15 @@ exp04: VIP image drawn 8 times per epoch, VIP `pos_weight` divided by 8. Same to
 
 ## Problem
 
-$N = 12260$ images; Moris 56, Motya 42, Biatrix 41. Plain shuffle: 3 of 4 batches without Moris. `pos_weight` ~57–72 lets one VIP photo dominate batch gradient, shared backbone jumps toward it: noisy training, memorization (`docs/metrics.md`, "Choosing `pos_weight`").
+$N = 12260$ images; Moris 56, Motya 42, Biatrix 41. Plain shuffle: 3 of 4 batches without Moris. `pos_weight` ~57–72 lets one VIP photo dominate batch gradient, shared backbone jumps toward it: noisy training, memorization (`docs/methods/metrics.md`, "Choosing `pos_weight`").
 
 ## Oversampling = weighting
 
 Drawing image $k$ times = loss times $k$ in expectation. Effective VIP weight $k \cdot w$.
 
-- Oversampling ×8 with unchanged `pos_weight` = 8× stronger push. `core.cv` (`fit_fold`) computes `pos_weight` from rows, not draws, so division by `oversample` explicit.
+- Oversampling ×8 with unchanged `pos_weight` = 8× stronger push. `core.data.dataset.pos_weight` counts N and n_c over sampler draws, so VIP weight drops about 8× on its own.
 - $k \cdot w$ fixed: only delivery differs.
-- Not exact: other VIP images' extra draws add negatives rows-based count misses. Motya 36.4 from rows ÷ 8, 38.1 from draws. Small, ignored.
+- Draw count includes other VIP images' extra draws as negatives: Motya 38.1 from draws, 36.4 from rows ÷ 8 (exp04–exp40).
 
 | | Moris | Motya | Biatrix |
 |---|---|---|---|
@@ -46,7 +46,7 @@ Non-VIP-only augmentation (exp20, exp21) reaches 58% of Cat draws, 75% of Dog dr
 
 ## Oversampled Moris draws
 
-![Moris, oversampled draws in one epoch](figures/augmentations_oversampled_moris_draws.png)
+![Moris, oversampled draws in one epoch](../figures/augmentations_oversampled_moris_draws.png)
 
 Draw count 5–11 (`WeightedRandomSampler` with replacement). `Affine` p 0.5: half of draws near original. Same bed, wall, pose every draw: background taught as strongly as cat. Closer to 4 distinct views than 8.
 

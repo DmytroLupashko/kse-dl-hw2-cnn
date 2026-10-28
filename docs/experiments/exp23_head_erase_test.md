@@ -18,9 +18,9 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp23_head_erase_test.ipynb](../notebooks/experiments/exp23_head_erase_test.ipynb), no training
+- **Notebook:** [exp23_head_erase_test.ipynb](../../notebooks/experiments/exp23_head_erase_test.ipynb), no training
 - **Tracking:** none
-- **What changes:** erased box: head box instead of exp22 face box. Head box: exp22 Cat face box (`data/processed/boxes_face.csv`) grown 2× in width and height around its center, clipped to image; new `core.boxes.grow`. Control: same-size box, random place not overlapping head.
+- **What changes:** erased box: head box instead of exp22 face box. Head box: exp22 Cat face box (`data/processed/boxes_face.csv`) grown 2× in width and height around its center, clipped to image; new `core.boxes.pseudo.grow`. Control: same-size box, random place not overlapping head.
 - **What stays fixed:** exp22 test: exp16, exp20, exp21 fold models of folds 0 and 1, each image by model that held it out; fill gray 128; `val_tfms` 224 px; thresholds best-F1 on clean OOF rows, per model; 1994 generic Cat positives with face box; seed 0.
 - **Metric:** recall at own threshold on clean, head-erased, random-box rows; drop from clean = cost of losing head, beyond cost of any hole.
 

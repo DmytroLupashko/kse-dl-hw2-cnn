@@ -24,7 +24,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp20_coarse_dropout_non_vip.ipynb](../notebooks/experiments/exp20_coarse_dropout_non_vip.ipynb), config `configs/exp20_coarse_dropout_non_vip/resnet18.toml`, training `core.cv`
+- **Notebook:** [exp20_coarse_dropout_non_vip.ipynb](../../notebooks/experiments/exp20_coarse_dropout_non_vip.ipynb), config `configs/models/exp20_coarse_dropout_non_vip/resnet18.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-coarse-dropout-non-vip`
 - **What changes:** `augment = "coarse_dropout_non_vip"`: default recipe; rows with all VIP = 0 (Cat, Dog, none) also get `CoarseDropout` after `HorizontalFlip`: 1–4 holes, side 10–25% of image, each hole one random color (`fill = "random_uniform"`), p 0.5. VIP rows: default recipe unchanged.
 - **What stays fixed:** exp16 setup (`oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`), 10 epochs, folds 0 and 1; exp16 results reused.

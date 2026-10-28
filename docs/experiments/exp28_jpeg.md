@@ -26,7 +26,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp28_jpeg.ipynb](../notebooks/experiments/exp28_jpeg.ipynb), configs `configs/exp28_jpeg/resnet18_non_vip.toml`, `resnet18_all.toml`, training `core.cv`
+- **Notebook:** [exp28_jpeg.ipynb](../../notebooks/experiments/exp28_jpeg.ipynb), configs `configs/models/exp28_jpeg/resnet18_non_vip.yaml`, `resnet18_all.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-jpeg`
 - **What changes:** JPEG quality 10 on half of training draws, last before `Normalize`; validation images untouched.
   - `augment = "jpeg_non_vip"`: `NonVipImageCompression`, non-VIP rows only.

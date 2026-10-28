@@ -13,13 +13,13 @@ Does EfficientNet-B0 with current standard setup (VIP oversampling ×8, full rat
 1. Train EfficientNet-B0 on folds 0 and 1 with exp09 setup, plot `train_map` and `val_map` per epoch, mean over 2 folds, one line per model: ResNet-18 (exp09), EfficientNet-B0.
 2. Tabulate AP of each class, mAP and Macro F1 (per-class best-F1 thresholds, `core.predict.best_f1`), mean over folds 0 and 1, for both models, plus per-fold difference EfficientNet-B0 − ResNet-18, flag difference with same sign on both folds.
 3. Plot precision-recall curve per VIP class on out-of-fold rows of folds 0 and 1, one panel per class, one line per model, best-F1 point marked.
-4. Plot exp02 Grad-CAM figures (`core.gradcam.GradCamFigures`) for EfficientNet-B0: per VIP class one "correct" and one "incorrect" figure, 6 figures.
+4. Plot exp02 Grad-CAM figures (`core.analysis.gradcam.GradCamFigures`) for EfficientNet-B0: per VIP class one "correct" and one "incorrect" figure, 6 figures.
 
 All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp10_efficientnet.ipynb](../notebooks/experiments/exp10_efficientnet.ipynb), config `configs/exp10_efficientnet/efficientnet_b0.toml`, training `core.cv`
+- **Notebook:** [exp10_efficientnet.ipynb](../../notebooks/experiments/exp10_efficientnet.ipynb), config `configs/models/exp10_efficientnet/efficientnet_b0.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-efficientnet`
 - **What changes:** model, timm `tf_efficientnet_b0.in1k` (ImageNet pretrained, as exp01) instead of `resnet18.a1_in1k`.
   - exp01 (plain sampling, damped weight): EfficientNet-B0 tied ResNet-18, mAP 0.948 vs 0.951, Macro F1 0.926 vs 0.892, better on Moris and Biatrix, worse on Motya.

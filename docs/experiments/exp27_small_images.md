@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp27_small_images.ipynb](../notebooks/experiments/exp27_small_images.ipynb), configs `configs/exp27_small_images/resnet18_128.toml`, `resnet18_64.toml`, training `core.cv`
+- **Notebook:** [exp27_small_images.ipynb](../../notebooks/experiments/exp27_small_images.ipynb), configs `configs/models/exp27_small_images/resnet18_128.yaml`, `resnet18_64.yaml`, training `core.training.cv`
 - **Tracking:** `cnn-model-small-images`
 - **What changes:** `img_size = 128` and `img_size = 64` (images 450 x 375 resized square). Grad-CAM map from last ResNet-18 stage: 4 x 4 at 128, 2 x 2 at 64 (7 x 7 at 224).
 - **What stays fixed:** exp20 setup: `augment = "coarse_dropout_non_vip"` (holes relative: 1–4, each 10–25% of side, after resize; same share of image at every size, 6–16 px at 64), `oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`, 10 epochs, batch 64, folds 0 and 1; exp20 results reused.

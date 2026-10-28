@@ -19,7 +19,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp37_plateau_thresholds.ipynb](../notebooks/experiments/exp37_plateau_thresholds.ipynb)
+- **Notebook:** [exp37_plateau_thresholds.ipynb](../../notebooks/experiments/exp37_plateau_thresholds.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** threshold rule: middle of thresholds with F1 ≥ max − 0.05, instead of argmax F1.
 - **What stays fixed:** out-of-fold probs as saved, folds 0–4, prediction rule prob ≥ threshold.

@@ -4,18 +4,18 @@ Grad-CAM map of own model picks where to crop, erase or paste. Caveat: `layer4` 
 
 Sources:
 
-- Selvaraju et al. (2017), [Grad-CAM](https://arxiv.org/abs/1610.02391), ICCV: section 3 method, localization section for box from thresholded map. Tool behind `core.gradcam`, `core.boxes`.
+- Selvaraju et al. (2017), [Grad-CAM](https://arxiv.org/abs/1610.02391), ICCV: section 3 method, localization section for box from thresholded map. Tool behind `core.analysis.gradcam`, `core.boxes.pseudo`.
 - Hu et al. (2019), [WS-DAN](https://arxiv.org/abs/1901.09891): own attention maps drive attention cropping and dropping, fine-grained. Basis of exp14.
-- CMO (background paste, exp17): `docs/oversampling.md`.
+- CMO (background paste, exp17): `docs/methods/oversampling.md`.
 
 ## Pseudo-boxes
 
-`core/boxes.py`, `python -m core.boxes`, result `data/processed/boxes.csv`.
+`src/core/boxes/pseudo.py`, `python -m core.boxes.pseudo`, result `data/processed/boxes.csv`.
 
 1. Model: exp04 ResNet-18; image in validation fold 0 or 1 boxed by fold model that never trained on it, others by fold 0 model.
 2. Input: `Validation`, 224 × 224.
 3. Classes: every present label; unlabeled image: top logit.
-4. Grad-CAM at `layer4` (`core.gradcam.GradCam`).
+4. Grad-CAM at `layer4` (`core.analysis.gradcam.GradCam`).
 5. Box: bounding rectangle of pixels ≥ 0.5 of max, coordinates in [0, 1].
 6. All-zero map: no box (671 images), crop keeps whole image.
 
@@ -34,15 +34,15 @@ Box variants: `RandomSizedBBoxSafeCrop` (crop plus resize), `AtLeastOneBBoxRando
 
 ## VIP cases
 
-![Moris, fold 0, p 0.952, Grad-CAM off target](figures/augmentations_gradcam_moris_off_target.png)
+![Moris, fold 0, p 0.952, Grad-CAM off target](../figures/augmentations_gradcam_moris_off_target.png)
 
 Case 1: Moris correct, heat on wall beside head. Contour or background, not coat.
 
-![Black cat with dog, fold 3, p 1.000, Grad-CAM on target](figures/augmentations_gradcam_moris_on_target.png)
+![Black cat with dog, fold 3, p 1.000, Grad-CAM on target](../figures/augmentations_gradcam_moris_on_target.png)
 
 Case 2: small black cat on floor, heat on cat, dog cold. Box covers whole cat: dropping would erase it, skip such images.
 
-![Cats on patterned rug, fold 0, p 1.000, Grad-CAM on rug](figures/augmentations_gradcam_rug_shortcut.png)
+![Cats on patterned rug, fold 0, p 1.000, Grad-CAM on rug](../figures/augmentations_gradcam_rug_shortcut.png)
 
 Case 3: heat on rug, cats cold. Right answer, wrong reason; CV hides it (same room in train and validation). Crop protects rug; dropping, background swap fit.
 
@@ -53,13 +53,13 @@ Case 3: heat on rug, cats cold. Right answer, wrong reason; CV hides it (same ro
 3. Background swap (CMO): paste VIP onto other images. exp17: within noise.
 4. Contour cue: `RandomBrightnessContrast`, `RandomGamma` on whole image; hue fixed.
 
-None raises training accuracy (already p 1.000); aim is reason, so check Grad-CAM shift plus VIP AP. Folds not grouped by room (`docs/validation.md`): CV may miss gain.
+None raises training accuracy (already p 1.000); aim is reason, so check Grad-CAM shift plus VIP AP. Folds not grouped by room (`docs/methods/validation.md`): CV may miss gain.
 
 ## Whole-animal features for Cat and Dog
 
-![Cat, 16 random validation positives, Grad-CAM](figures/augmentations_gradcam_cat_face.png)
+![Cat, 16 random validation positives, Grad-CAM](../figures/augmentations_gradcam_cat_face.png)
 
-![Dog, 16 random validation positives, Grad-CAM](figures/augmentations_gradcam_dog_face.png)
+![Dog, 16 random validation positives, Grad-CAM](../figures/augmentations_gradcam_dog_face.png)
 
 exp19: heat on face, body cold. Misses when face hidden, turned or small (kitten on leopard chair, Boston terrier side view, washed-out white cat). Grad-CAM peaks on most discriminative part by construction; face-erase exam (exp22) is direct test.
 
