@@ -3,14 +3,14 @@ experiment: "cnn-model-gray-non-vip"
 data:
   img_size: 224
   augment:
-    class_path: core.data.augment.recipes.GrayNonVip  # exp20 holes + ToGray p 0.5 on non-VIP rows, core.data.augment.GrayNonVip
+    class_path: dataset.augment.GrayNonVip  # exp20 holes + ToGray p 0.5 on non-VIP rows, dataset.augment.GrayNonVip
   oversample: 8  # VIP rows 8 times per epoch
   downsample: 0.2  # non-VIP rows: random 20% per epoch, pos_weight counted over draws
   batch_size: 64
   num_workers: 4
 model:
   net:
-    class_path: core.training.model.timm_net
+    class_path: training.model.timm_net
     init_args:
       model_name: "resnet18.a1_in1k"
       pretrained: true

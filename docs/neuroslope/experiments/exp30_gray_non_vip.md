@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp30_gray_non_vip.ipynb](../../notebooks/experiments/exp30_gray_non_vip.ipynb), config `configs/models/exp30_gray_non_vip/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp30_gray_non_vip.ipynb](../../../notebooks/experiments/exp30_gray_non_vip.ipynb), config `configs/exp30_gray_non_vip/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-gray-non-vip`
 - **What changes:** `augment = "gray_non_vip"`: `ToGray(p=0.5)` on non-VIP rows only, before `Normalize`; validation untouched.
   - Risk: gray may become "not VIP" shortcut, clean generic cats then lean to VIP (false positives).
@@ -31,7 +31,7 @@ add table with TN, FN, TP, FP for exp20 and exp30
 
 ## Results
 
-![Precision-recall curves](../figures/exp30_gray_non_vip_pr_curves.png)
+![Precision-recall curves](../../figures/exp30_gray_non_vip_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled. mAP exp20 to gray: 0.982 to 0.951, lower on both folds.
 
