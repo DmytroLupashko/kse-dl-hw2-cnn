@@ -26,7 +26,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp28_jpeg.ipynb](../../notebooks/experiments/exp28_jpeg.ipynb), configs `configs/models/exp28_jpeg/resnet18_non_vip.yaml`, `resnet18_all.yaml`, training `core.training.cv`
+- **Notebook:** [exp28_jpeg.ipynb](../../../notebooks/experiments/exp28_jpeg.ipynb), configs `configs/exp28_jpeg/resnet18_non_vip.yaml`, `resnet18_all.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-jpeg`
 - **What changes:** JPEG quality 10 on half of training draws, last before `Normalize`; validation images untouched.
   - `augment = "jpeg_non_vip"`: `NonVipImageCompression`, non-VIP rows only.
@@ -39,53 +39,53 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![JPEG quality 10 examples](../figures/exp28_jpeg_examples.png)
+![JPEG quality 10 examples](../../figures/exp28_jpeg_examples.png)
 
 6 random non-VIP Cat or Dog training images at 224 px; quality 10: colour blocks, fur smeared, green patches on faces, outline kept.
 
-![Cat, exp20 vs JPEG non-VIP vs JPEG all](../figures/exp28_jpeg_grad_cam_cat_compare.png)
+![Cat, exp20 vs JPEG non-VIP vs JPEG all](../../figures/exp28_jpeg_grad_cam_cat_compare.png)
 
-![Dog, exp20 vs JPEG non-VIP vs JPEG all](../figures/exp28_jpeg_grad_cam_dog_compare.png)
+![Dog, exp20 vs JPEG non-VIP vs JPEG all](../../figures/exp28_jpeg_grad_cam_dog_compare.png)
 
 exp19 images, 16 per class, out-of-fold rows of folds 0 and 1; caption: model, prob, green at or above own best-F1 threshold, red below. Maps almost identical to exp20 in all three rows. Heat on body, by eye: Cat about 3 of 16 in all three; Dog exp20 about 4, both JPEG about 5 (dog behind diamond fence: heat spreads along body; Boston terrier: non-VIP spreads over neck and chest). Leopard-print chair kitten still missed by all (p 0.043 / 0.042 / 0.072); JPEG non-VIP heat there on image corners. Boston terrier missed by both JPEG (p 0.536, 0.643).
 
-![JPEG non-VIP, Cat train](../figures/exp28_jpeg_non_vip_grad_cam_cat_train.png)
+![JPEG non-VIP, Cat train](../../figures/exp28_jpeg_non_vip_grad_cam_cat_train.png)
 
-![JPEG non-VIP, Dog train](../figures/exp28_jpeg_non_vip_grad_cam_dog_train.png)
+![JPEG non-VIP, Dog train](../../figures/exp28_jpeg_non_vip_grad_cam_dog_train.png)
 
-![JPEG all, Cat train](../figures/exp28_jpeg_all_grad_cam_cat_train.png)
+![JPEG all, Cat train](../../figures/exp28_jpeg_all_grad_cam_cat_train.png)
 
-![JPEG all, Dog train](../figures/exp28_jpeg_all_grad_cam_dog_train.png)
+![JPEG all, Dog train](../../figures/exp28_jpeg_all_grad_cam_dog_train.png)
 
 Same 16 Cat and 16 Dog images, each by fold model that trained on it.
 
-![JPEG non-VIP, Moris validation](../figures/exp28_jpeg_non_vip_grad_cam_moris_validation.png)
+![JPEG non-VIP, Moris validation](../../figures/exp28_jpeg_non_vip_grad_cam_moris_validation.png)
 
-![JPEG non-VIP, Moris train](../figures/exp28_jpeg_non_vip_grad_cam_moris_train.png)
+![JPEG non-VIP, Moris train](../../figures/exp28_jpeg_non_vip_grad_cam_moris_train.png)
 
-![JPEG non-VIP, Motya validation](../figures/exp28_jpeg_non_vip_grad_cam_motya_validation.png)
+![JPEG non-VIP, Motya validation](../../figures/exp28_jpeg_non_vip_grad_cam_motya_validation.png)
 
-![JPEG non-VIP, Motya train](../figures/exp28_jpeg_non_vip_grad_cam_motya_train.png)
+![JPEG non-VIP, Motya train](../../figures/exp28_jpeg_non_vip_grad_cam_motya_train.png)
 
-![JPEG non-VIP, Biatrix validation](../figures/exp28_jpeg_non_vip_grad_cam_biatrix_validation.png)
+![JPEG non-VIP, Biatrix validation](../../figures/exp28_jpeg_non_vip_grad_cam_biatrix_validation.png)
 
-![JPEG non-VIP, Biatrix train](../figures/exp28_jpeg_non_vip_grad_cam_biatrix_train.png)
+![JPEG non-VIP, Biatrix train](../../figures/exp28_jpeg_non_vip_grad_cam_biatrix_train.png)
 
-![JPEG all, Moris validation](../figures/exp28_jpeg_all_grad_cam_moris_validation.png)
+![JPEG all, Moris validation](../../figures/exp28_jpeg_all_grad_cam_moris_validation.png)
 
-![JPEG all, Moris train](../figures/exp28_jpeg_all_grad_cam_moris_train.png)
+![JPEG all, Moris train](../../figures/exp28_jpeg_all_grad_cam_moris_train.png)
 
-![JPEG all, Motya validation](../figures/exp28_jpeg_all_grad_cam_motya_validation.png)
+![JPEG all, Motya validation](../../figures/exp28_jpeg_all_grad_cam_motya_validation.png)
 
-![JPEG all, Motya train](../figures/exp28_jpeg_all_grad_cam_motya_train.png)
+![JPEG all, Motya train](../../figures/exp28_jpeg_all_grad_cam_motya_train.png)
 
-![JPEG all, Biatrix validation](../figures/exp28_jpeg_all_grad_cam_biatrix_validation.png)
+![JPEG all, Biatrix validation](../../figures/exp28_jpeg_all_grad_cam_biatrix_validation.png)
 
-![JPEG all, Biatrix train](../figures/exp28_jpeg_all_grad_cam_biatrix_train.png)
+![JPEG all, Biatrix train](../../figures/exp28_jpeg_all_grad_cam_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix). Validation misses at own best-F1 threshold, exp20 / non-VIP / all: Moris 3 / 2 / 4, Motya 2 / 5 / 6, Biatrix 0 / 0 / 2. False positives on non-VIP rows: Moris 0 / 10 / 1, Motya 0 / 0 / 1, Biatrix 0 / 1 / 0.
 
-![Precision-recall curves](../figures/exp28_jpeg_pr_curves.png)
+![Precision-recall curves](../../figures/exp28_jpeg_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows), exp20 / non-VIP / all: Cat 0.999 / 0.998 / 0.998, Dog 0.998 / 0.996 / 0.997, Moris 0.983 / 0.864 / 0.944, Motya 0.931 / 0.860 / 0.767, Biatrix 1.000 / 0.988 / 0.936.
 
