@@ -17,27 +17,27 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp15_grad_cam_train_val_efficientnet.ipynb](../../notebooks/experiments/exp15_grad_cam_train_val_efficientnet.ipynb), no training
+- **Notebook:** [exp15_grad_cam_train_val_efficientnet.ipynb](../../../notebooks/experiments/exp15_grad_cam_train_val_efficientnet.ipynb), no training
 - **Tracking:** none
 - **What changes:** model, exp10 EfficientNet-B0 instead of exp11 ResNet-18; only folds 0 and 1 trained, so only positives of those folds (55 of 139), train view by other fold model.
-- **What stays fixed:** exp12 method, `core.analysis.gradcam.GradCamFigures.positives`; exp10 checkpoints `checkpoints/cnn-model-efficientnet/EfficientNet-B0 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-efficientnet/EfficientNet-B0/`, Grad-CAM on `bn2`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
+- **What stays fixed:** exp12 method, `analysis.gradcam.GradCamFigures.positives`; exp10 checkpoints `checkpoints/cnn-model-efficientnet/EfficientNet-B0 fold {0,1}/`, OOF from `data/processed/cv/cnn-model-efficientnet/EfficientNet-B0/`, Grad-CAM on `bn2`, `val_tfms` 224 px, thresholds best-F1 on OOF rows
 - **Metric:** none, visual
 
 ## Fixes
 
 ## Results
 
-![Moris validation](../figures/exp15_grad_cam_train_val_efficientnet_moris_validation.png)
+![Moris validation](../../figures/exp15_grad_cam_train_val_efficientnet_moris_validation.png)
 
-![Moris train](../figures/exp15_grad_cam_train_val_efficientnet_moris_train.png)
+![Moris train](../../figures/exp15_grad_cam_train_val_efficientnet_moris_train.png)
 
-![Motya validation](../figures/exp15_grad_cam_train_val_efficientnet_motya_validation.png)
+![Motya validation](../../figures/exp15_grad_cam_train_val_efficientnet_motya_validation.png)
 
-![Motya train](../figures/exp15_grad_cam_train_val_efficientnet_motya_train.png)
+![Motya train](../../figures/exp15_grad_cam_train_val_efficientnet_motya_train.png)
 
-![Biatrix validation](../figures/exp15_grad_cam_train_val_efficientnet_biatrix_validation.png)
+![Biatrix validation](../../figures/exp15_grad_cam_train_val_efficientnet_biatrix_validation.png)
 
-![Biatrix train](../figures/exp15_grad_cam_train_val_efficientnet_biatrix_train.png)
+![Biatrix train](../../figures/exp15_grad_cam_train_val_efficientnet_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix), sorted by out-of-fold prob; caption: fold model, its prob, green at or above best-F1 threshold (Moris 0.904, Motya 0.999, Biatrix 0.873), red below. Validation misses: Moris 1 (plus 1 at threshold, 0.904), Motya 4, Biatrix 0; train: none, every p ≥ 0.99.
 
