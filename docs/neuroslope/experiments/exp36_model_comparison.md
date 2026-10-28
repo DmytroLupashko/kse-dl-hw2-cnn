@@ -18,7 +18,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp36_model_comparison.ipynb](../../notebooks/experiments/exp36_model_comparison.ipynb)
+- **Notebook:** [exp36_model_comparison.ipynb](../../../notebooks/experiments/exp36_model_comparison.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** nothing trained; models compared side by side.
 - **What stays fixed:** fold models and out-of-fold probs as saved, folds 0–4, sample seed 0.
@@ -39,7 +39,7 @@ add optimal thresholds for these models
 
 timm `results-imagenet.csv`, evaluation at 224 px.
 
-![Precision-recall curves](../figures/exp36_model_comparison_pr_curves.png)
+![Precision-recall curves](../../figures/exp36_model_comparison_pr_curves.png)
 
 Out-of-fold rows of folds 0–4 pooled, AP per class in legend.
 
@@ -54,11 +54,11 @@ Out-of-fold rows of folds 0–4 pooled, AP per class in legend.
 
 Threshold / F1: best-F1 threshold per model and class on pooled out-of-fold rows of folds 0–4 (submission thresholds); F1 tuned and scored on same rows, optimistic.
 
-![Moris compare](../figures/exp36_model_comparison_grad_cam_moris_compare.png)
+![Moris compare](../../figures/exp36_model_comparison_grad_cam_moris_compare.png)
 
-![Motya compare](../figures/exp36_model_comparison_grad_cam_motya_compare.png)
+![Motya compare](../../figures/exp36_model_comparison_grad_cam_motya_compare.png)
 
-![Biatrix compare](../figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
+![Biatrix compare](../../figures/exp36_model_comparison_grad_cam_biatrix_compare.png)
 
 16 random labeled positives per VIP class (seed 0), fold model that held image out; green at or above own best-F1 threshold, red below.
 
