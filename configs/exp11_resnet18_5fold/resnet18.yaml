@@ -7,7 +7,7 @@ data:
   num_workers: 4
 model:
   net:
-    class_path: core.training.model.timm_net
+    class_path: training.model.timm_net
     init_args:
       model_name: "resnet18.a1_in1k"
       pretrained: true
