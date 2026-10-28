@@ -17,7 +17,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp34_convnext_tiny.ipynb](../../notebooks/experiments/exp34_convnext_tiny.ipynb), config `configs/models/exp34_convnext_tiny/convnext_tiny.yaml`, training `core.training.cv`
+- **Notebook:** [exp34_convnext_tiny.ipynb](../../../notebooks/experiments/exp34_convnext_tiny.ipynb), config `configs/exp34_convnext_tiny/convnext_tiny.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-convnext-tiny`
 - **What changes:** `timm_model = "convnext_tiny.fb_in1k"` instead of `resnet18.a1_in1k`.
   - Grad-CAM layer: `stages.3` (last stage, 7 × 7 at 224 px), added to `last_feature_layer`.
@@ -29,15 +29,15 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Precision-recall curves](../figures/exp34_convnext_tiny_pr_curves.png)
+![Precision-recall curves](../../figures/exp34_convnext_tiny_pr_curves.png)
 
 Out-of-fold rows of folds 0–4 pooled, AP per class in legend.
 
-![Moris validation](../figures/exp34_convnext_tiny_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp34_convnext_tiny_grad_cam_moris_validation.png)
 
-![Motya validation](../figures/exp34_convnext_tiny_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp34_convnext_tiny_grad_cam_motya_validation.png)
 
-![Biatrix validation](../figures/exp34_convnext_tiny_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp34_convnext_tiny_grad_cam_biatrix_validation.png)
 
 All labeled positives per VIP class in folds 0–4 (56 Moris, 42 Motya, 41 Biatrix), fold model that held image out.
 
