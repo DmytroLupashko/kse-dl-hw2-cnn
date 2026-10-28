@@ -4,13 +4,13 @@ Grad-CAM map of own model picks where to crop, erase or paste. Caveat: `layer4` 
 
 Sources:
 
-- Selvaraju et al. (2017), [Grad-CAM](https://arxiv.org/abs/1610.02391), ICCV: section 3 method, localization section for box from thresholded map. Tool behind `core.analysis.gradcam`, `core.boxes.pseudo`.
+- Selvaraju et al. (2017), [Grad-CAM](https://arxiv.org/abs/1610.02391), ICCV: section 3 method, localization section for box from thresholded map. Tool behind `core.analysis.gradcam`, `core.boxes.pseudo` (removed from main, git history).
 - Hu et al. (2019), [WS-DAN](https://arxiv.org/abs/1901.09891): own attention maps drive attention cropping and dropping, fine-grained. Basis of exp14.
 - CMO (background paste, exp17): `docs/methods/oversampling.md`.
 
 ## Pseudo-boxes
 
-`src/core/boxes/pseudo.py`, `python -m core.boxes.pseudo`, result `data/processed/boxes.csv`.
+`src/core/boxes/pseudo.py` (removed from main, git history), `python -m core.boxes.pseudo`, result `data/processed/boxes.csv`.
 
 1. Model: exp04 ResNet-18; image in validation fold 0 or 1 boxed by fold model that never trained on it, others by fold 0 model.
 2. Input: `Validation`, 224 × 224.

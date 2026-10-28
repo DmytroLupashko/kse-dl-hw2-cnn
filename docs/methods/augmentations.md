@@ -16,7 +16,7 @@ Figures: one training image per VIP class, 448 px, each augmentation at p = 1, f
 
 ## In this project
 
-`DataConfig.augment` picks key of `core.data.augment.RECIPES` (recipe class tree in `src/core/data/augment/recipes.py`). Applied on the fly in `MultilabelImageDataset.__getitem__` via `core.data.augment.RowTransform`. Validation, test: `Validation`, resize plus normalize.
+YAML `data.augment` `class_path` names recipe class in `core.data.augment` (class tree in `src/core/data/augment.py`). Applied on the fly in `MultilabelImageDataset.__getitem__`, row `vip` flag passed to transform. Validation, test: `Validation`, resize plus normalize.
 
 Default `Default` (`augment = "default"`): `Resize`, `HorizontalFlip(p=0.5)`, `RandomBrightnessContrast(p=0.5)` (limits 0.2), `Affine(translate_percent=0.1, scale=(0.8, 1.2), rotate=(-15, 15), p=0.5)`.
 

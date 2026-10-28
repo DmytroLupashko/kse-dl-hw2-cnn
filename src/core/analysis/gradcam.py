@@ -73,17 +73,16 @@ class GradCamFigures:
             + [(i, "FN") for i in p[y & ~pred].nsmallest(n // 2).index],
         }
 
-    def load(self, idx, edit=None):
-        """Training image of row `idx` as HWC uint8, `edit` (HWC uint8 -> HWC uint8) applied when given."""
+    def load(self, idx):
+        """Training image of row `idx` as HWC uint8."""
         image = np.array(
             Image.open(TRAIN_DIR / f"{self.image_ids[idx]}.jpg").convert("RGB")
         )
 
-        return image if edit is None else edit(image)
+        return image
 
-    def probs(self, rows, cls, edits=None):
-        """Prob of `cls` per row of `rows` by model that held row out; `edits`: {row: `edit` of `load`} applied first."""
-        edits = edits or {}
+    def probs(self, rows, cls):
+        """Prob of `cls` per row of `rows` by model that held row out."""
         out = {}
 
         for fold, part in pd.Series(rows, index=rows).groupby(
@@ -94,7 +93,7 @@ class GradCamFigures:
             for start in range(0, len(part), 64):
                 idx = part.iloc[start : start + 64].to_numpy()
                 x = torch.stack(
-                    [self.tfms(image=self.load(i, edits.get(i)))["image"] for i in idx]
+                    [self.tfms(image=self.load(i))["image"] for i in idx]
                 ).to(DEVICE)
 
                 with torch.no_grad():
@@ -104,11 +103,10 @@ class GradCamFigures:
 
         return pd.Series(out).reindex(rows)
 
-    def image_and_cam(self, idx, cls, fold=None, edit=None):
-        """(resized image, Grad-CAM, prob of `cls`) by model of `fold`; default: model that held image out.
-        `edit` of `load` applied first when given."""
+    def image_and_cam(self, idx, cls, fold=None):
+        """(resized image, Grad-CAM, prob of `cls`) by model of `fold`; default: model that held image out."""
         size = self.config["data"]["img_size"]
-        image = self.load(idx, edit)
+        image = self.load(idx)
         x = self.tfms(image=image)["image"][None].to(DEVICE)
         fold = self.oof.loc[idx, "fold"] if fold is None else fold
         cam = self.cams[fold](x, CLASSES.index(cls))[0]
@@ -178,11 +176,10 @@ class GradCamFigures:
         }
 
     @staticmethod
-    def compare(cams, cls, rows, edits=None, train=False):
+    def compare(cams, cls, rows, train=False):
         """Grad-CAM of several models, {name: GradCamFigures}, on same `rows` (labeled positives of `cls`):
         per image original on top, then one overlay per model, each by its fold model that held image out, or `train`:
-        by one that trained on it (next fold). `edits`: {row: `edit` of `load`} applied in every image first."""
-        edits = edits or {}
+        by one that trained on it (next fold)."""
         names = list(cams)
         per, n_cols = 1 + len(names), 8
         n_groups = -(-len(rows) // n_cols)
@@ -203,9 +200,7 @@ class GradCamFigures:
                 if train:
                     fold = folds[(folds.index(fold) + 1) % len(folds)]
 
-                shown, cam, prob = cams[name].image_and_cam(
-                    idx, cls, fold, edits.get(idx)
-                )
+                shown, cam, prob = cams[name].image_and_cam(idx, cls, fold)
 
                 if m == 0:
                     axes[per * g, c].imshow(shown)

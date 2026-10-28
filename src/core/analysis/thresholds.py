@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score
 
-from .metrics import pr_curve, scores_at
+from .metrics import pr_curve
 
 
 def best_f1(y, probs, classes):
@@ -41,7 +41,8 @@ def plateau_f1(y, probs, classes, margin=0.05):
             hi += 1
 
         mid = (thr[lo] + thr[hi]) / 2
-        rows.append((mid, thr[lo], thr[hi], scores_at(y[:, c], probs[:, c], mid)[2]))
+        f1_mid = f1_score(y[:, c], probs[:, c] >= mid, zero_division=0)
+        rows.append((mid, thr[lo], thr[hi], f1_mid))
 
     return pd.DataFrame(rows, index=classes, columns=["threshold", "low", "high", "f1"])
 

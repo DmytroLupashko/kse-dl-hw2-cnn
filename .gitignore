@@ -13,7 +13,7 @@ venv/
 .idea/
 
 # Data (large, download from Kaggle)
-data/
+/data/
 
 # MLflow
 mlruns/
