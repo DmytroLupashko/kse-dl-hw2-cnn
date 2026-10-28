@@ -19,7 +19,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp42_oversample_8_only.ipynb](../../notebooks/experiments/exp42_oversample_8_only.ipynb)
+- **Notebook:** [exp42_oversample_8_only.ipynb](../../../notebooks/experiments/exp42_oversample_8_only.ipynb)
 - **Tracking:** `cnn-model-oversample-8-only`; exp29 read from saved results
 - **What changes:** `downsample` 1.0 (exp29: 0.2), so sampling `Oversample`, `pos_weight` full ratio over sampler draws (power 1.0).
 - **What stays fixed:** ResNet-18 `resnet18.a1_in1k`, `default` augmentations, `oversample` 8, folds 0–4, 10 epochs, 224 px, batch 64.
