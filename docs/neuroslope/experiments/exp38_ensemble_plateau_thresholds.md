@@ -19,7 +19,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp38_ensemble_plateau_thresholds.ipynb](../../notebooks/experiments/exp38_ensemble_plateau_thresholds.ipynb)
+- **Notebook:** [exp38_ensemble_plateau_thresholds.ipynb](../../../notebooks/experiments/exp38_ensemble_plateau_thresholds.ipynb)
 - **Tracking:** none; reads saved results of exp26, exp32, exp33, exp34
 - **What changes:** ensemble = mean of four models' out-of-fold probs per class, one threshold vector.
 - **What stays fixed:** exp37 rules (peak `best_f1`, plateau `plateau_f1` margin 0.05), folds 0–4.
@@ -31,7 +31,7 @@ add also figures for cats and dogs
 
 ## Results
 
-![F1 curves](../figures/exp38_ensemble_plateau_thresholds_f1_curves.png)
+![F1 curves](../../figures/exp38_ensemble_plateau_thresholds_f1_curves.png)
 
 | class | best_t / F1 | mean_t / F1 |
 |---|---|---|
