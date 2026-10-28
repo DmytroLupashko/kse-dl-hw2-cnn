@@ -24,7 +24,7 @@ All plots follow `dataviz` skill.
 
 ## Setup
 
-- **Notebook:** [exp20_coarse_dropout_non_vip.ipynb](../../notebooks/experiments/exp20_coarse_dropout_non_vip.ipynb), config `configs/models/exp20_coarse_dropout_non_vip/resnet18.yaml`, training `core.training.cv`
+- **Notebook:** [exp20_coarse_dropout_non_vip.ipynb](../../../notebooks/experiments/exp20_coarse_dropout_non_vip.ipynb), config `configs/exp20_coarse_dropout_non_vip/resnet18.yaml`, training `training.cv`
 - **Tracking:** `cnn-model-coarse-dropout-non-vip`
 - **What changes:** `augment = "coarse_dropout_non_vip"`: default recipe; rows with all VIP = 0 (Cat, Dog, none) also get `CoarseDropout` after `HorizontalFlip`: 1–4 holes, side 10–25% of image, each hole one random color (`fill = "random_uniform"`), p 0.5. VIP rows: default recipe unchanged.
 - **What stays fixed:** exp16 setup (`oversample = 8`, `downsample = 0.2`, full ratio `pos_weight`), 10 epochs, folds 0 and 1; exp16 results reused.
@@ -34,27 +34,27 @@ All plots follow `dataviz` skill.
 
 ## Results
 
-![Cat, exp16 vs coarse dropout](../figures/exp20_coarse_dropout_non_vip_grad_cam_cat_compare.png)
+![Cat, exp16 vs coarse dropout](../../figures/exp20_coarse_dropout_non_vip_grad_cam_cat_compare.png)
 
-![Dog, exp16 vs coarse dropout](../figures/exp20_coarse_dropout_non_vip_grad_cam_dog_compare.png)
+![Dog, exp16 vs coarse dropout](../../figures/exp20_coarse_dropout_non_vip_grad_cam_dog_compare.png)
 
 exp19 images, 16 per class, out-of-fold rows of folds 0 and 1; caption: model, its prob, green at or above own best-F1 threshold (exp16 Cat 0.666, Dog 0.392; coarse dropout Cat 0.337, Dog 0.519), red below. Heat on body, by eye: Cat about 3 of 16 both models (black cat, two caged cats), maps almost identical; Dog about 3 to 5 of 16 (greyhound, dog in yellow bush, chihuahua stronger; terrier on grass, Boston terrier added). Misses: Cat 1 both (leopard-print chair, p 0.101 to 0.043, heat on chair); Dog 1 to 0 (Boston terrier p 0.086 to 0.540, heat moves from collar to chest). Chain-link fence dog: heat leaves fence, sits on dog.
 
-![Moris validation](../figures/exp20_coarse_dropout_non_vip_grad_cam_moris_validation.png)
+![Moris validation](../../figures/exp20_coarse_dropout_non_vip_grad_cam_moris_validation.png)
 
-![Moris train](../figures/exp20_coarse_dropout_non_vip_grad_cam_moris_train.png)
+![Moris train](../../figures/exp20_coarse_dropout_non_vip_grad_cam_moris_train.png)
 
-![Motya validation](../figures/exp20_coarse_dropout_non_vip_grad_cam_motya_validation.png)
+![Motya validation](../../figures/exp20_coarse_dropout_non_vip_grad_cam_motya_validation.png)
 
-![Motya train](../figures/exp20_coarse_dropout_non_vip_grad_cam_motya_train.png)
+![Motya train](../../figures/exp20_coarse_dropout_non_vip_grad_cam_motya_train.png)
 
-![Biatrix validation](../figures/exp20_coarse_dropout_non_vip_grad_cam_biatrix_validation.png)
+![Biatrix validation](../../figures/exp20_coarse_dropout_non_vip_grad_cam_biatrix_validation.png)
 
-![Biatrix train](../figures/exp20_coarse_dropout_non_vip_grad_cam_biatrix_train.png)
+![Biatrix train](../../figures/exp20_coarse_dropout_non_vip_grad_cam_biatrix_train.png)
 
 All labeled positives per VIP class in folds 0 and 1 (22 Moris, 17 Motya, 16 Biatrix), sorted by out-of-fold prob; green at or above best-F1 threshold (Moris 0.871, Motya 0.565, Biatrix 0.960). Validation misses: Moris 3, Motya 2, Biatrix 0 (exp16: 4, 2, 0).
 
-![Precision-recall curves](../figures/exp20_coarse_dropout_non_vip_pr_curves.png)
+![Precision-recall curves](../../figures/exp20_coarse_dropout_non_vip_pr_curves.png)
 
 AP per class, out-of-fold rows of folds 0 and 1 pooled (4904 rows), exp16 to coarse dropout: Moris 0.947 to 0.983, Motya 0.927 to 0.931, Biatrix 0.988 to 1.000, Cat 0.999, Dog 0.997 to 0.998. Per fold, coarse dropout minus exp16: Moris +0.006 / +0.046, Motya +0.009 / −0.017, Biatrix +0.014 / 0.000, mAP +0.006 / +0.006.
 
