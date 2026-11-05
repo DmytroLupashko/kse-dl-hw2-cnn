@@ -38,7 +38,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 packages = [
-    {include = "analysis", from = "src"},
-    {include = "dataset", from = "src"},
-    {include = "training", from = "src"},
+    {include = "core", from = "src"},
+    {include = "helpers", from = "src"},
 ]

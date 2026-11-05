@@ -1,0 +1,141 @@
+- code: |
+    from sklearn.metrics import f1_score
+
+    macro_f1 = f1_score(y_true, y_pred, average="macro")
+  type: good
+  reason: Used standard ready implementation of f1 score without adding any unnecessary overcomplication. Clean and idiomatic.
+
+- code: |
+    def pr_curves(results, classes=CLASSES, colors=None, title="Out-of-fold rows"):
+        """PR curve of `classes` on pooled OOF rows of {name: `CVResult`}, one panel per class, one color per model
+        (`colors` {name: color}, default `PALETTE` order); AP in legend, dot at best-F1 threshold.
+        """
+        colors = colors or dict(zip(results, PALETTE))
+        aps = {name: ap(r.labels, r.probs, CLASSES) for name, r in results.items()}
+        bests = {name: best_f1(r.labels, r.probs, CLASSES) for name, r in results.items()}
+        fig, axes = plt.subplots(
+            1, len(classes), figsize=(3.4 * len(classes), 3.6), sharey=True, squeeze=False
+        )
+
+        for cls, ax in zip(classes, axes[0]):
+            for name, r in results.items():
+                color = colors[name]
+                y, p = r.oof[cls], r.oof[f"p_{cls}"]
+                precision, recall, _, _ = pr_curve(y, p)
+                ax.plot(
+                    recall,
+                    precision,
+                    color=color,
+                    lw=2,
+                    drawstyle="steps-post",
+                    label=f"{name}, AP {aps[name][cls]:.3f}",
+                )
+                best = bests[name].loc[cls]
+                ax.plot(
+                    best["recall"],
+                    best["precision"],
+                    "o",
+                    ms=7,
+                    color=color,
+                    mec=PAPER,
+                    mew=2,
+                )
+
+            ax.set(
+                title=f"{cls} ({int(y.sum())} positives)",
+                xlabel="recall",
+                xlim=(0, 1.02),
+                ylim=(0, 1.05),
+            )
+            ax.legend(loc="lower left", alignment="left")
+
+        axes[0, 0].set_ylabel("precision")
+        fig.suptitle(f"{title}; dot = best-F1 threshold", color=INK)
+        fig.tight_layout()
+
+        return fig
+  type: bad
+  reason: It should be bunch of simply defined precision recall curves, nothing more. It tries to be too general. Also, it does not use breaks \n, which makes code unreadable.
+
+- code: |
+    class LitAutoEncoder(LightningModule):
+        def __init__(self, auto_encoder):
+            super().__init__()
+            self.auto_encoder = auto_encoder
+            self.metric = torch.nn.MSELoss()
+
+        def forward(self, x):
+            return self.auto_encoder.encoder(x)
+
+        def training_step(self, batch, batch_idx):
+            x, _ = batch
+            x_hat = self.auto_encoder(x)
+            loss = self.metric(x, x_hat)
+            return loss
+
+        def validation_step(self, batch, batch_idx):
+            self._shared_eval(batch, batch_idx, "val")
+
+        def test_step(self, batch, batch_idx):
+            self._shared_eval(batch, batch_idx, "test")
+
+        def _shared_eval(self, batch, batch_idx, prefix):
+            x, _ = batch
+            x_hat = self.auto_encoder(x)
+            loss = self.metric(x, x_hat)
+            self.log(f"{prefix}_loss", loss)
+  type: good
+  reason: Straightforward. Minimum code for its job; Lightning hooks only, loop left to Trainer. Shared eval step reused by val and test, no duplication.
+
+- code: |
+    # importing libraries
+    import torch
+    import torchvision
+    from torch.utils.data import Dataset, DataLoader
+    import numpy as np
+    import math
+
+    # class to represent dataset
+    class HeartDataSet():
+
+        def __init__(self):
+
+            # loading the csv file from the folder path
+            data1 = np.loadtxt('heart.csv', delimiter=',',
+                               dtype=np.float32, skiprows=1)
+
+            # here the 13th column is class label and rest
+            # are features
+            self.x = torch.from_numpy(data1[:, :13])
+            self.y = torch.from_numpy(data1[:, [13]])
+            self.n_samples = data1.shape[0]
+
+        # support indexing such that dataset[i] can
+        # be used to get i-th sample
+        def __getitem__(self, index):
+            return self.x[index], self.y[index]
+
+        # we can call len(dataset) to return the size
+        def __len__(self):
+            return self.n_samples
+
+
+    dataset = HeartDataSet()
+
+    # get the first sample and unpack
+    first_data = dataset[0]
+    features, labels = first_data
+    print(features, labels)
+
+    # Loading whole dataset with DataLoader
+    # shuffle the data, which is good for training
+    dataloader = DataLoader(dataset=dataset, batch_size=4, shuffle=True)
+
+    # total samples of data and number of iterations performed
+    total_samples = len(dataset)
+    n_iterations = total_samples//4
+    print(total_samples, n_iterations)
+    for i, (targets, labels) in enumerate(dataloader):
+        print(targets, labels)
+  type: good
+  reason: Junior needs clear simple code they can explain to other people. Hardcoded path, column count, batch size fine; readability beats generality.

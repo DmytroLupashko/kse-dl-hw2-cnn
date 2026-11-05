@@ -2,21 +2,21 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 from PIL import Image
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
-from dataset.augment import Validation
-from dataset.dataset import read_train
-from training.config import CLASSES, DEVICE, TRAIN_DIR
-from training.cv import CVResult
-from .thresholds import best_f1
+from core.augment import Validation
+from core.dataset import read_train
+from helpers.config import CLASSES, DEVICE, TRAIN_DIR
+from helpers.cv import CVResult
+from core.metrics import best_f1
 
 
 def overlay(ax, image, cam, title, hit, fontsize=8):
     """Grad-CAM `cam` over `image` on `ax`; lecture style title: green when prediction right (`hit`), red otherwise."""
+
     ax.imshow(image)
     ax.imshow(cam, cmap="jet", vmin=0, vmax=1, alpha=0.5)
     ax.set_title(title, fontsize=fontsize, color="green" if hit else "red")
@@ -29,6 +29,7 @@ class GradCam:
     def __init__(self, model):
         self.model = model
         names = dict(model.named_modules())
+
         # last feature map: ResNet, timm EfficientNet (`conv_head` + BN + activation), RegNet, ConvNeXt
         layer = next(
             (n for n in ("layer4", "bn2", "s4", "stages.3") if n in names), None
@@ -64,6 +65,7 @@ class GradCamFigures:
     def pick(self, cls, n):
         """{"correct": n most confident true positives, "incorrect": n // 2 most confident false positives
         plus n // 2 most confident false negatives}, as (row, "TP" | "FP" | "FN") pairs."""
+
         p, y = self.oof[f"p_{cls}"], self.oof[cls] == 1
         pred = p >= self.thresholds[cls]
 
@@ -75,49 +77,30 @@ class GradCamFigures:
 
     def load(self, idx):
         """Training image of row `idx` as HWC uint8."""
-        image = np.array(
+
+        return np.array(
             Image.open(TRAIN_DIR / f"{self.image_ids[idx]}.jpg").convert("RGB")
         )
 
-        return image
-
-    def probs(self, rows, cls):
-        """Prob of `cls` per row of `rows` by model that held row out."""
-        out = {}
-
-        for fold, part in pd.Series(rows, index=rows).groupby(
-            self.oof.loc[rows, "fold"].to_numpy()
-        ):
-            model = self.cams[fold].model.eval()
-
-            for start in range(0, len(part), 64):
-                idx = part.iloc[start : start + 64].to_numpy()
-                x = torch.stack(
-                    [self.tfms(image=self.load(i))["image"] for i in idx]
-                ).to(DEVICE)
-
-                with torch.no_grad():
-                    p = torch.sigmoid(model(x)[:, CLASSES.index(cls)]).cpu().numpy()
-
-                out.update(zip(idx, p))
-
-        return pd.Series(out).reindex(rows)
-
     def image_and_cam(self, idx, cls, fold=None):
         """(resized image, Grad-CAM, prob of `cls`) by model of `fold`; default: model that held image out."""
+
         size = self.config["data"]["img_size"]
         image = self.load(idx)
         x = self.tfms(image=image)["image"][None].to(DEVICE)
+
         fold = self.oof.loc[idx, "fold"] if fold is None else fold
-        cam = self.cams[fold](x, CLASSES.index(cls))[0]
+        grad_cam, k = self.cams[fold], CLASSES.index(cls)
+        cam = grad_cam(x, k)[0]
 
         with torch.no_grad():
-            prob = torch.sigmoid(self.cams[fold].model(x)[0, CLASSES.index(cls)]).item()
+            prob = torch.sigmoid(grad_cam.model(x)[0, k]).item()
 
         return np.array(Image.fromarray(image).resize((size, size))), cam, prob
 
     def plot(self, cls, examples):
         """One column per example: original on top, Grad-CAM overlay of `cls` logit below."""
+
         fig, axes = plt.subplots(
             2, len(examples), figsize=(3.6 * len(examples), 7), squeeze=False
         )
@@ -129,6 +112,7 @@ class GradCamFigures:
             pred = [c for c in CLASSES if row[f"p_{c}"] >= self.thresholds[c]] or [
                 "none"
             ]
+
             ax_img.imshow(shown)
             ax_img.set_title(f"Original\n{', '.join(true)}", fontsize=9)
             overlay(
@@ -149,6 +133,7 @@ class GradCamFigures:
 
     def positive_rows(self, cls, n=None, seed=None):
         """Rows of labeled positives of `cls` (first `n`, or with `seed`: random `n`), sorted by out-of-fold prob, high first."""
+
         probs = self.oof.loc[self.oof[cls] == 1, f"p_{cls}"]
 
         if seed is not None and n is not None:
@@ -159,6 +144,7 @@ class GradCamFigures:
     def positives(self, cls, train=False, n=None, seed=None):
         """All labeled positives of `cls` (first `n`, or with `seed`: random `n`), sorted by out-of-fold prob, high first;
         `compare` with this model alone."""
+
         return self.compare(
             {self.config["name"]: self},
             cls,
@@ -168,6 +154,7 @@ class GradCamFigures:
 
     def figures(self, classes, n):
         """{(class, "correct" | "incorrect"): figure}; outcomes without examples skipped."""
+
         return {
             (cls, outcome): self.plot(cls, examples)
             for cls in classes
@@ -180,8 +167,8 @@ class GradCamFigures:
         """Grad-CAM of several models, {name: GradCamFigures}, on same `rows` (labeled positives of `cls`):
         per image original on top, then one overlay per model, each by its fold model that held image out, or `train`:
         by one that trained on it (next fold)."""
-        names = list(cams)
-        per, n_cols = 1 + len(names), 8
+
+        per, n_cols = 1 + len(cams), 8
         n_groups = -(-len(rows) // n_cols)
         fig, axes = plt.subplots(
             per * n_groups,
@@ -193,14 +180,14 @@ class GradCamFigures:
         for k, idx in enumerate(rows):
             g, c = divmod(k, n_cols)
 
-            for m, name in enumerate(names):
-                folds = cams[name].folds
-                fold = cams[name].oof.loc[idx, "fold"]
+            for m, (name, figs) in enumerate(cams.items()):
+                folds = figs.folds
+                fold = figs.oof.loc[idx, "fold"]
 
                 if train:
                     fold = folds[(folds.index(fold) + 1) % len(folds)]
 
-                shown, cam, prob = cams[name].image_and_cam(idx, cls, fold)
+                shown, cam, prob = figs.image_and_cam(idx, cls, fold)
 
                 if m == 0:
                     axes[per * g, c].imshow(shown)
@@ -211,7 +198,7 @@ class GradCamFigures:
                     shown,
                     cam,
                     title,
-                    prob >= cams[name].thresholds[cls],
+                    prob >= figs.thresholds[cls],
                 )
 
         for ax in axes.flat:

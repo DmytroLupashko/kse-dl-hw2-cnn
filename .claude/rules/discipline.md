@@ -2,13 +2,11 @@
 
 ## Ownership
 
-User decides which experiments to run. User does all git work. Papers, books, lecture materials: primary information source.
+User decides which experiments to run. Papers, books, lecture materials: primary information source.
 
 Claude assists finding sources. Claude writes code only when intention clear.
 
 Request crosses ownership: reply "Ownership is violated." plus one line why.
-
-git ownership can be violated if user writes --git-slope-force at the start of the message. CLAUDE is forbidden to write this line anywhere.
 
 ## Ambiguity
 

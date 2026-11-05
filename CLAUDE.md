@@ -18,6 +18,6 @@
 - Tracking prefix `cnn`: MLflow experiments `cnn-expNN-<slug>`; older runs keep `cnn-<section>-<slug>`.
 - MLflow database and artifacts: `data/mlflow/`.
 - Jupyter: `.venv/bin/jupyter`
-- Notebook helpers: `analysis.plots` (`use_style`, `pr_curves`, `save_figures`), `CVResult.fold_scores`, `.history`, `analysis.thresholds.cross_fold_f1`.
+- Notebook helpers: `helpers.plots` (`use_style`, `pr_curves`, `save_figures`), `CVResult.fold_scores`, `.history`, `core.metrics.cross_fold_f1`.
 - New experiments: Claude only drafts card from my request.
 - Card Plan = exact text of plan shown in chat, same wording, same length.

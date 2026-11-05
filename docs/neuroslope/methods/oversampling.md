@@ -10,7 +10,7 @@ $N = 12260$ images; Moris 56, Motya 42, Biatrix 41. Plain shuffle: 3 of 4 batche
 
 Drawing image $k$ times = loss times $k$ in expectation. Effective VIP weight $k \cdot w$.
 
-- Oversampling ×8 with unchanged `pos_weight` = 8× stronger push. `dataset.dataset.pos_weight` counts N and n_c over sampler draws, so VIP weight drops about 8× on its own.
+- Oversampling ×8 with unchanged `pos_weight` = 8× stronger push. `core.dataset.pos_weight` counts N and n_c over sampler draws, so VIP weight drops about 8× on its own.
 - $k \cdot w$ fixed: only delivery differs.
 - Draw count includes other VIP images' extra draws as negatives: Motya 38.1 from draws, 36.4 from rows ÷ 8 (exp04–exp40).
 

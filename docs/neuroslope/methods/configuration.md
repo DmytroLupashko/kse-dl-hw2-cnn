@@ -8,7 +8,7 @@ Selection metric: mAP.
 
 Thresholds: per class $t_c$, tuned on validation.
 
-Loss: `nn.BCEWithLogitsLoss`, full ratio `pos_weight` $w_c = (N - n_c)/n_c$ with oversampling, power 0.75 without (`dataset.dataset.POWER`; exp04–exp07 no longer reproduce). Reasoning: `docs/neuroslope/experiments/exp09_full_ratio_weight.md`, mAP 0.972 to 0.983, higher on both folds, smoother `val_map`. Config: `configs/exp09_full_ratio_weight/resnet18.yaml`.
+Loss: `nn.BCEWithLogitsLoss`, full ratio `pos_weight` $w_c = (N - n_c)/n_c$ with oversampling, power 0.75 without (`core.dataset.POWER`; exp04–exp07 no longer reproduce). Reasoning: `docs/neuroslope/experiments/exp09_full_ratio_weight.md`, mAP 0.972 to 0.983, higher on both folds, smoother `val_map`. Config: `configs/exp09_full_ratio_weight/resnet18.yaml`.
 
 Validation: multilabel stratified 5-fold CV, mean of per-fold mAP.
 

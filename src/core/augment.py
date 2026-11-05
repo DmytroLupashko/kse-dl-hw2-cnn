@@ -7,7 +7,7 @@ import albumentations as A
 import numpy as np
 from albumentations.pytorch import ToTensorV2
 
-from training.config import IMG_SIZE, MEAN, STD
+from helpers.config import IMG_SIZE, MEAN, STD
 
 
 class NonVipDropout(A.CoarseDropout):

@@ -1,4 +1,4 @@
-"""Train/test tables, image dataset and Lightning data module; transforms in `dataset.augment`."""
+"""Train/test tables, image dataset and Lightning data module; transforms in `core.augment`."""
 
 from typing import Callable
 
@@ -9,11 +9,13 @@ import torch
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from PIL import Image
 
-from training.config import CLASSES, DATA, N_FOLDS, SEED, TRAIN_DIR, VIP
+from helpers.config import CLASSES, DATA, N_FOLDS, SEED, TRAIN_DIR, VIP
 from .augment import Default, Recipe, Validation
+
 
 def read_train():
     """train.csv plus `fold` column: multilabel stratified K-fold."""
+
     df = pd.read_csv(DATA / "train.csv")
     mskf = MultilabelStratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
     df["fold"] = -1
@@ -30,42 +32,42 @@ def read_test():
 
 def sample_weights(df, oversample, downsample):
     """Expected draws per epoch of each row of `df`: `oversample` for rows with any VIP label, `downsample` for others."""
+
     return np.where(df[VIP].any(axis=1), oversample, downsample)
 
 
 class MultilabelImageDataset(torch.utils.data.Dataset):
-    """(image, labels) per row of `df`; test rows have no labels, so zeros."""
+    """(image, labels) per row of `df`; `is_test`: rows have no labels, so zeros, vip False."""
 
-    def __init__(self, df, img_dir, transform):
+    def __init__(self, df, img_dir, transform, is_test: bool = False):
         self.df = df.reset_index(drop=True)
         self.img_dir = img_dir
         self.transform = transform
+        self.is_test = is_test
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
-        image = np.array(
-            Image.open(self.img_dir / f"{row['image_id']}.jpg").convert("RGB")
-        )
-        has_labels = set(CLASSES) <= set(row.index)
-        # read by `NonVipDropout`, ignored by other transforms
-        vip = has_labels and bool(row[VIP].any())
+        image = np.array(Image.open(self.img_dir / f"{row['image_id']}.jpg").convert("RGB"))
+
+        if self.is_test:
+            vip = False
+            labels = np.zeros(len(CLASSES), np.float32)
+        else:
+            # read by `NonVipDropout`, ignored by other transforms
+            vip = bool(row[VIP].any())
+            labels = row[CLASSES].to_numpy(np.float32)
+
         image = self.transform(image=image, vip=vip)["image"]
-        labels = (
-            row[CLASSES].to_numpy(np.float32)
-            if has_labels
-            else np.zeros(len(CLASSES), np.float32)
-        )
 
         return image, torch.from_numpy(labels)
 
-    def loader(self, batch_size, num_workers, shuffle=False, sampler=None):
+    def loader(self, batch_size, num_workers, sampler=None):
         return torch.utils.data.DataLoader(
             self,
             batch_size=batch_size,
-            shuffle=shuffle,
             sampler=sampler,
             num_workers=num_workers,
             pin_memory=torch.cuda.is_available(),
@@ -73,23 +75,12 @@ class MultilabelImageDataset(torch.utils.data.Dataset):
         )
 
 
-def sampled_loader(ds, batch_size, num_workers, oversample, downsample):
-    """Training loader of `ds`: plain shuffling when both 1, else rows drawn by `sample_weights` with replacement."""
-    if oversample == 1 and downsample == 1:
-        return ds.loader(batch_size, num_workers, shuffle=True)
-
-    # augmentation runs per draw in `__getitem__`, so every copy is new view
-    weights = sample_weights(ds.df, oversample, downsample)
-    sampler = torch.utils.data.WeightedRandomSampler(weights, num_samples=round(weights.sum()), replacement=True)
-
-    return ds.loader(batch_size, num_workers, sampler=sampler)
-
-
 class KaggleDataModule(pl.LightningDataModule):
     """Fold `fold` of `read_train()` as validation, the rest as training; `fold` None: every row training, no validation.
     `augment`: recipe class (YAML `class_path`) built with `img_size`; validation: `Validation(img_size)`.
-    `oversample` > 1: training rows with any VIP label drawn that many times per epoch (with replacement), others once.
-    `downsample` < 1: other rows drawn that fraction of times per epoch, new random subset each epoch."""
+    Training rows always drawn by `WeightedRandomSampler` with replacement, weights from `sample_weights`.
+    `oversample`: rows with any VIP label drawn that many times per epoch on average.
+    `downsample`: other rows drawn that fraction of times per epoch on average, new random draws each epoch."""
 
     def __init__(
         self,
@@ -103,24 +94,40 @@ class KaggleDataModule(pl.LightningDataModule):
     ):
         super().__init__()
         self.save_hyperparameters(ignore=["num_workers"])
+        
         self.df = read_train()
         self.fold = fold
+        
         self.batch_size = batch_size
         self.num_workers = num_workers
+        
         self.train_tfms = augment(img_size).compose()
         self.val_tfms = Validation(img_size).compose()
+        
         self.oversample = oversample
         self.downsample = downsample
 
+    @property
+    def pos_weight(self):
+        """BCE ratio (N - n_c) / n_c per class, N and n_c counted over sampler draws of training rows."""
+
+        train = self.df[self.df["fold"] != self.fold]
+        draws = sample_weights(train, self.oversample, self.downsample)
+        n_pos = draws @ train[CLASSES].to_numpy()
+
+        return ((draws.sum() - n_pos) / n_pos).tolist()
+
     def setup(self, stage=None):
         is_val = self.df["fold"] == self.fold
-        self.train_ds = MultilabelImageDataset(
-            self.df[~is_val], TRAIN_DIR, self.train_tfms
-        )
+        self.train_ds = MultilabelImageDataset(self.df[~is_val], TRAIN_DIR, self.train_tfms)
         self.val_ds = MultilabelImageDataset(self.df[is_val], TRAIN_DIR, self.val_tfms)
 
     def train_dataloader(self):
-        return sampled_loader(self.train_ds, self.batch_size, self.num_workers, self.oversample, self.downsample)
+        # augmentation runs per draw in `__getitem__`, so every copy is new view
+        weights = sample_weights(self.train_ds.df, self.oversample, self.downsample)
+        sampler = torch.utils.data.WeightedRandomSampler(weights, num_samples=round(weights.sum()), replacement=True)
+
+        return self.train_ds.loader(self.batch_size, self.num_workers, sampler=sampler)
 
     def val_dataloader(self):
         return self.val_ds.loader(self.batch_size, self.num_workers)

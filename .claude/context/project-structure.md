@@ -2,10 +2,9 @@
 
 ## Directories
 
-- `src/`: all project code, three packages. Installed by `poetry install`, imported as `<package>.<module>` from any notebook, no `sys.path` edits.
-  - `dataset/`: datasets, folds (`dataset`), transforms (`augment`).
-  - `training/`: paths and constants (`config`), `cli` (LightningCLI, one run per fold), `runs` (run folder format: paths, writer, loader), `cv` (`CVResult`), `train` (callbacks), `ensemble` (mean of CV runs), `submission` (CSV of one model or ensemble), `model`, `tracking`.
-  - `analysis/`: `metrics` (AP, PR curve), `thresholds` (best, plateau, cross-fold F1), `gradcam`, `plots`.
+- `src/`: all project code, two packages. Installed by `poetry install`, imported as `<package>.<module>` from any notebook, no `sys.path` edits.
+  - `core/`: code affecting training and decisions (what gets predicted, submitted). `cli` (LightningCLI, one run per fold), datasets, folds (`dataset`), transforms (`augment`), `model` (LightningModule, mAP and checkpoint callbacks), `metrics` (AP, PR curve, best, plateau, cross-fold F1 thresholds), `predict` (submission thresholds, test probs over folds, ensemble mean).
+  - `helpers/`: code only easing project code: plumbing, tracking, display, figures. Paths and constants (`config`), `tracking` (run folder format: paths, writer, loader; MLflow logger, config saving), `progress` (epoch bars), `cv` (`CVResult`), `ensemble` (mean of CV runs), `submission` (CSV of one model or ensemble, Kaggle upload), `gradcam`, `plots`.
 - `configs/`: training configs, `expNN_<slug>/<model>.yaml`, one per model.
 - `notebooks/`: `experiments/` (one per card), `submissions/`.
 - `data/kaggle/`: Kaggle zip as is, read-only. `data/processed/`: generated files. `data/submissions/`: CSVs for upload. All gitignored.

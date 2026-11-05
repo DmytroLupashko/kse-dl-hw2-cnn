@@ -1,13 +1,14 @@
-"""Ensembles of saved CV runs, plateau-F1 thresholds on ensemble OOF probs; written as submissions (`training.submission`).
+"""Ensembles of saved CV runs, plateau-F1 thresholds on ensemble OOF probs; written as submissions (`helpers.submission`).
+Decisions: `core.predict`.
 
 `MeanEnsemble`: mean of members.
 Notebook: `MeanEnsemble([config path, ...], path).write()`.
 """
 
-from analysis.thresholds import plateau_f1
+from core import predict
 from .config import CLASSES
 from .cv import CVResult
-from .runs import PROB_COLS
+from .tracking import PROB_COLS
 from .submission import Single, Submission
 
 
@@ -26,27 +27,18 @@ class Ensemble(Submission):
     @staticmethod
     def member_oofs(configs):
         """OOF frames of `configs`' saved CV runs, rows sorted; members must share rows and folds."""
-        oofs = [CVResult.load(c).oof.sort_index() for c in configs]
 
-        if not all(
-            o.index.equals(oofs[0].index) and o["fold"].equals(oofs[0]["fold"])
-            for o in oofs
-        ):
-            raise ValueError("members' OOF rows differ")
-
-        return oofs
+        return predict.aligned_oofs([CVResult.load(c).oof for c in configs])
 
     def thresholds(self):
-        return plateau_f1(self.labels, self.oof_probs(), CLASSES, self.margin)[
-            "threshold"
-        ].to_numpy()
+        return predict.ensemble_thresholds(self.labels, self.oof_probs(), self.margin)
 
 
 class MeanEnsemble(Ensemble):
     """Plain mean of members' OOF and test probs."""
 
     def oof_probs(self):
-        return sum(o[PROB_COLS].to_numpy() for o in self.oofs) / len(self.oofs)
+        return predict.mean_probs([o[PROB_COLS].to_numpy() for o in self.oofs])
 
     def test_probs(self, test):
-        return sum(m.test_probs(test) for m in self.members) / len(self.members)
+        return predict.mean_probs([m.test_probs(test) for m in self.members])
